@@ -1,3 +1,5 @@
+// Copyright 2022 <Maros Varchola - mvarchdev>
+
 /// @brief Maximum of key and value length
 #define CONFIG_ARG_MAX_BYTES 128
 
@@ -7,11 +9,10 @@ typedef struct config_option config_option;
 typedef config_option *config_option_t;
 
 /// @brief Struct for storing one key/value data
-struct config_option
-{
-    config_option_t prev;
-    char key[CONFIG_ARG_MAX_BYTES];
-    char value[CONFIG_ARG_MAX_BYTES];
+struct config_option {
+  config_option_t prev;
+  char key[CONFIG_ARG_MAX_BYTES];
+  char value[CONFIG_ARG_MAX_BYTES];
 };
 
 config_option_t read_config_file(char *path);

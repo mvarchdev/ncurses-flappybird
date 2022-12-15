@@ -1,4 +1,1 @@
-var searchData=
-[
-  ['bird_0',['bird',['../structbird.html',1,'']]]
-];
+var searchData = [["bird_0", ["bird", ["../structbird.html", 1, ""]]]]

@@ -11,5 +11,5 @@ $(OUTPUT): clean
 	$(CC) $(CFLAGS) *.c $(LDLIBS) -o $(OUTPUT)
 
 # remove compiled files
-clean: 
+clean:
 	rm -rf $(OUTPUT) *.o

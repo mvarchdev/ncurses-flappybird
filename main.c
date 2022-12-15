@@ -1,14 +1,16 @@
-#include "rendering.h"
-#include "processing.h"
-#include <stdio.h>
-#include <ncurses.h>
-#include <time.h>
-#include <stdlib.h>
+// Copyright 2022 <Maros Varchola - mvarchdev>
 
-int main()
-{
-    srand(time(NULL));
-    init_screen();
-    run_game();
-    endwin();
+#include <ncurses.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#include "processing.h"
+#include "rendering.h"
+
+int main() {
+  srand(time(NULL));
+  init_screen();
+  run_game();
+  endwin();
 }

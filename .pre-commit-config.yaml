@@ -42,7 +42,6 @@ repos:
     hooks:
       - id: remove-crlf
         files: \^(?!proAlphaXsdDefinitions$).*$
-      - id: remove-tabs
 
   - repo: https://github.com/sirosen/fix-smartquotes
     rev: 0.2.0
@@ -84,10 +83,8 @@ repos:
     rev: master
     hooks:
       - id: clang-format
-        args: [--style=Google]
-      - id: clang-tidy
-      - id: oclint
-      - id: uncrustify
+        args:
+          - -i
+          - --style=Google
       - id: cppcheck
-      - id: cpplint
       - id: include-what-you-use
