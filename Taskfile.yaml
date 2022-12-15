@@ -1,0 +1,14 @@
+---
+version: "3"
+
+silent: false
+
+env:
+
+tasks:
+### ====== INCLUDE EXTERNAL TASKFILES ====== ###
+includes:
+  pre-commit:
+    taskfile: .taskfiles/pre-commit.yaml
+    optional: true
+    aliases: [pc]

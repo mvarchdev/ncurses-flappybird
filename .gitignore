@@ -1,4 +1,16 @@
 **
+.DS_Store
+
+!.taskfiles
+!.taskfiles/**
+!.editorconfig
+!.markdownlint.yaml
+!.pre-commit-config.yaml
+!.prettierignore
+!.prettierrc.yaml
+!.yamllint.config.yaml
+!Taskfile.yaml
+
 !**/.gitignore
 !**/*.c
 !**/*.h
@@ -10,4 +22,3 @@
 !html/**
 !latex/**
 !qat.doxygen
-.DS_Store
