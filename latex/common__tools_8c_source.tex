@@ -1,0 +1,45 @@
+\hypertarget{common__tools_8c_source}{}\doxysection{common\+\_\+tools.\+c}
+\mbox{\hyperlink{common__tools_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00001}00001 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{common__tools_8h}{common\_tools.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00002}00002 \textcolor{preprocessor}{\#include <stdlib.h>}}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00003}00003 \textcolor{preprocessor}{\#include <time.h>}}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00004}00004 \textcolor{preprocessor}{\#include <errno.h>}}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00005}00005 \textcolor{preprocessor}{\#include <sys/time.h>}}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00006}00006 }
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00011}\mbox{\hyperlink{common__tools_8c_a092e2f7ee1a5f651d3c3a95e9b55d46a}{00011}} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{common__tools_8c_a092e2f7ee1a5f651d3c3a95e9b55d46a}{rand\_gen}}(\textcolor{keywordtype}{int} min, \textcolor{keywordtype}{int} max)}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00012}00012 \{}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00013}00013     \textcolor{keywordflow}{return} min + (rand() \% ((max + 1) -\/ min));}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00014}00014 \}}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00015}00015 }
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00019}\mbox{\hyperlink{common__tools_8c_afd2fe3756543f698c07bcbf76e4b04e5}{00019}} \textcolor{keywordtype}{int} \mbox{\hyperlink{common__tools_8c_afd2fe3756543f698c07bcbf76e4b04e5}{msleep}}(\textcolor{keywordtype}{long} msec)}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00020}00020 \{}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00021}00021     \textcolor{keyword}{struct }timespec ts;}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00022}00022     \textcolor{keywordtype}{int} res;}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00023}00023 }
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00024}00024     \textcolor{keywordflow}{if} (msec < 0)}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00025}00025     \{}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00026}00026         errno = EINVAL;}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00027}00027         \textcolor{keywordflow}{return} -\/1;}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00028}00028     \}}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00029}00029 }
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00030}00030     ts.tv\_sec = msec / 1000;}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00031}00031     ts.tv\_nsec = (msec \% 1000) * 1000000;}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00032}00032 }
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00033}00033     \textcolor{keywordflow}{do}}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00034}00034     \{}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00035}00035         res = nanosleep(\&ts, \&ts);}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00036}00036     \} \textcolor{keywordflow}{while} (res \&\& errno == EINTR);}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00037}00037 }
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00038}00038     \textcolor{keywordflow}{return} res;}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00039}00039 \}}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00040}00040 }
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00043}\mbox{\hyperlink{common__tools_8c_a3a98f4f7e6c28e389e7165d6e35bced6}{00043}} \textcolor{keywordtype}{long} \textcolor{keywordtype}{long} \mbox{\hyperlink{common__tools_8c_a3a98f4f7e6c28e389e7165d6e35bced6}{timeInMilliseconds}}()}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00044}00044 \{}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00045}00045     \textcolor{keyword}{struct }timeval tv;}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00046}00046 }
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00047}00047     gettimeofday(\&tv, NULL);}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00048}00048     \textcolor{keywordflow}{return} (((\textcolor{keywordtype}{long} \textcolor{keywordtype}{long})tv.tv\_sec) * 1000) + (tv.tv\_usec / 1000);}
+\DoxyCodeLine{\Hypertarget{common__tools_8c_source_l00049}00049 \}}
+
+\end{DoxyCode}

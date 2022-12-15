@@ -1,0 +1,13 @@
+**
+!**/.gitignore
+!**/*.c
+!**/*.h
+!assets
+!assets/**
+!Makefile
+!html
+!latex
+!html/**
+!latex/**
+!qat.doxygen
+.DS_Store

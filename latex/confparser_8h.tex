@@ -1,0 +1,113 @@
+\hypertarget{confparser_8h}{}\doxysection{confparser.\+h File Reference}
+\label{confparser_8h}\index{confparser.h@{confparser.h}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structconfig__option}{config\+\_\+option}}
+\begin{DoxyCompactList}\small\item\em Struct for storing one key/value data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{confparser_8h_a471b94144d3ad30225b4153eff696641}{CONFIG\+\_\+\+ARG\+\_\+\+MAX\+\_\+\+BYTES}}~128
+\begin{DoxyCompactList}\small\item\em Maximum of key and value length. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \mbox{\hyperlink{structconfig__option}{config\+\_\+option}} \mbox{\hyperlink{confparser_8h_aa653d7d44f2366342a950342462ffa0b}{config\+\_\+option}}
+\begin{DoxyCompactList}\small\item\em Struct for storing one key/value data. \end{DoxyCompactList}\item 
+typedef \mbox{\hyperlink{structconfig__option}{config\+\_\+option}} $\ast$ \mbox{\hyperlink{confparser_8h_a993dab671bf56da614018ed554f8a1f3}{config\+\_\+option\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em Type of struct for storing one key/value data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{confparser_8h_a993dab671bf56da614018ed554f8a1f3}{config\+\_\+option\+\_\+t}} \mbox{\hyperlink{confparser_8h_afda32bfcd47ea734781a13a05ab4c33b}{read\+\_\+config\+\_\+file}} (char $\ast$path)
+\begin{DoxyCompactList}\small\item\em Read config file. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{confparser_8h_acca900bfb501826d472dcee89ab9fcea}{get\+\_\+int\+\_\+key\+\_\+value}} (char $\ast$filename, char $\ast$key)
+\item 
+int \mbox{\hyperlink{confparser_8h_a30b592d20670aa1cbefd86c997837f5d}{set\+\_\+int\+\_\+key\+\_\+value}} (char $\ast$tmpfile, char $\ast$datafile, char $\ast$key, int value)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{confparser_8h_a471b94144d3ad30225b4153eff696641}\label{confparser_8h_a471b94144d3ad30225b4153eff696641}} 
+\index{confparser.h@{confparser.h}!CONFIG\_ARG\_MAX\_BYTES@{CONFIG\_ARG\_MAX\_BYTES}}
+\index{CONFIG\_ARG\_MAX\_BYTES@{CONFIG\_ARG\_MAX\_BYTES}!confparser.h@{confparser.h}}
+\doxysubsubsection{\texorpdfstring{CONFIG\_ARG\_MAX\_BYTES}{CONFIG\_ARG\_MAX\_BYTES}}
+{\footnotesize\ttfamily \#define CONFIG\+\_\+\+ARG\+\_\+\+MAX\+\_\+\+BYTES~128}
+
+
+
+Maximum of key and value length. 
+
+
+
+Definition at line \mbox{\hyperlink{confparser_8h_source_l00002}{2}} of file \mbox{\hyperlink{confparser_8h_source}{confparser.\+h}}.
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{confparser_8h_aa653d7d44f2366342a950342462ffa0b}\label{confparser_8h_aa653d7d44f2366342a950342462ffa0b}} 
+\index{confparser.h@{confparser.h}!config\_option@{config\_option}}
+\index{config\_option@{config\_option}!confparser.h@{confparser.h}}
+\doxysubsubsection{\texorpdfstring{config\_option}{config\_option}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structconfig__option}{config\+\_\+option}} \mbox{\hyperlink{structconfig__option}{config\+\_\+option}}}
+
+
+
+Struct for storing one key/value data. 
+
+
+
+Definition at line \mbox{\hyperlink{confparser_8h_source_l00005}{5}} of file \mbox{\hyperlink{confparser_8h_source}{confparser.\+h}}.
+
+\mbox{\Hypertarget{confparser_8h_a993dab671bf56da614018ed554f8a1f3}\label{confparser_8h_a993dab671bf56da614018ed554f8a1f3}} 
+\index{confparser.h@{confparser.h}!config\_option\_t@{config\_option\_t}}
+\index{config\_option\_t@{config\_option\_t}!confparser.h@{confparser.h}}
+\doxysubsubsection{\texorpdfstring{config\_option\_t}{config\_option\_t}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{structconfig__option}{config\+\_\+option}}$\ast$ \mbox{\hyperlink{confparser_8h_a993dab671bf56da614018ed554f8a1f3}{config\+\_\+option\+\_\+t}}}
+
+
+
+Type of struct for storing one key/value data. 
+
+
+
+Definition at line \mbox{\hyperlink{confparser_8h_source_l00007}{7}} of file \mbox{\hyperlink{confparser_8h_source}{confparser.\+h}}.
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{confparser_8h_acca900bfb501826d472dcee89ab9fcea}\label{confparser_8h_acca900bfb501826d472dcee89ab9fcea}} 
+\index{confparser.h@{confparser.h}!get\_int\_key\_value@{get\_int\_key\_value}}
+\index{get\_int\_key\_value@{get\_int\_key\_value}!confparser.h@{confparser.h}}
+\doxysubsubsection{\texorpdfstring{get\_int\_key\_value()}{get\_int\_key\_value()}}
+{\footnotesize\ttfamily int get\+\_\+int\+\_\+key\+\_\+value (\begin{DoxyParamCaption}\item[{char $\ast$}]{filename,  }\item[{char $\ast$}]{key }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{confparser_8h_afda32bfcd47ea734781a13a05ab4c33b}\label{confparser_8h_afda32bfcd47ea734781a13a05ab4c33b}} 
+\index{confparser.h@{confparser.h}!read\_config\_file@{read\_config\_file}}
+\index{read\_config\_file@{read\_config\_file}!confparser.h@{confparser.h}}
+\doxysubsubsection{\texorpdfstring{read\_config\_file()}{read\_config\_file()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{confparser_8h_a993dab671bf56da614018ed554f8a1f3}{config\+\_\+option\+\_\+t}} read\+\_\+config\+\_\+file (\begin{DoxyParamCaption}\item[{char $\ast$}]{path }\end{DoxyParamCaption})}
+
+
+
+Read config file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & Path to config file \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Pointer to allocated config file data 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{confparser_8c_source_l00010}{10}} of file \mbox{\hyperlink{confparser_8c_source}{confparser.\+c}}.
+
+\mbox{\Hypertarget{confparser_8h_a30b592d20670aa1cbefd86c997837f5d}\label{confparser_8h_a30b592d20670aa1cbefd86c997837f5d}} 
+\index{confparser.h@{confparser.h}!set\_int\_key\_value@{set\_int\_key\_value}}
+\index{set\_int\_key\_value@{set\_int\_key\_value}!confparser.h@{confparser.h}}
+\doxysubsubsection{\texorpdfstring{set\_int\_key\_value()}{set\_int\_key\_value()}}
+{\footnotesize\ttfamily int set\+\_\+int\+\_\+key\+\_\+value (\begin{DoxyParamCaption}\item[{char $\ast$}]{tmpfile,  }\item[{char $\ast$}]{datafile,  }\item[{char $\ast$}]{key,  }\item[{int}]{value }\end{DoxyParamCaption})}
+

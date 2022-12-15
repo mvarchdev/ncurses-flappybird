@@ -1,0 +1,93 @@
+\hypertarget{confparser_8c}{}\doxysection{confparser.\+c File Reference}
+\label{confparser_8c}\index{confparser.c@{confparser.c}}
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}confparser.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{confparser_8h_a993dab671bf56da614018ed554f8a1f3}{config\+\_\+option\+\_\+t}} \mbox{\hyperlink{confparser_8c_afda32bfcd47ea734781a13a05ab4c33b}{read\+\_\+config\+\_\+file}} (char $\ast$path)
+\begin{DoxyCompactList}\small\item\em Read config file. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{confparser_8c_ac61ef7dc6f43e1cf194ef8139114428e}{get\+\_\+int\+\_\+key\+\_\+value}} (char filename\mbox{[}$\,$\mbox{]}, char key\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Get config file integer value of key. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{confparser_8c_a8ffc9afbe6fd1ef789b46c52f20ebb61}{set\+\_\+int\+\_\+key\+\_\+value}} (char tmpfilename\mbox{[}$\,$\mbox{]}, char datafile\mbox{[}$\,$\mbox{]}, char key\mbox{[}$\,$\mbox{]}, int value)
+\begin{DoxyCompactList}\small\item\em Set integer to config file based on key. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{confparser_8c_ac61ef7dc6f43e1cf194ef8139114428e}\label{confparser_8c_ac61ef7dc6f43e1cf194ef8139114428e}} 
+\index{confparser.c@{confparser.c}!get\_int\_key\_value@{get\_int\_key\_value}}
+\index{get\_int\_key\_value@{get\_int\_key\_value}!confparser.c@{confparser.c}}
+\doxysubsubsection{\texorpdfstring{get\_int\_key\_value()}{get\_int\_key\_value()}}
+{\footnotesize\ttfamily int get\+\_\+int\+\_\+key\+\_\+value (\begin{DoxyParamCaption}\item[{char}]{filename\mbox{[}$\,$\mbox{]},  }\item[{char}]{key\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Get config file integer value of key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & Config name to use \\
+\hline
+{\em key} & Key to find \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Integer value of key, -\/1 if not found 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{confparser_8c_source_l00090}{90}} of file \mbox{\hyperlink{confparser_8c_source}{confparser.\+c}}.
+
+\mbox{\Hypertarget{confparser_8c_afda32bfcd47ea734781a13a05ab4c33b}\label{confparser_8c_afda32bfcd47ea734781a13a05ab4c33b}} 
+\index{confparser.c@{confparser.c}!read\_config\_file@{read\_config\_file}}
+\index{read\_config\_file@{read\_config\_file}!confparser.c@{confparser.c}}
+\doxysubsubsection{\texorpdfstring{read\_config\_file()}{read\_config\_file()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{confparser_8h_a993dab671bf56da614018ed554f8a1f3}{config\+\_\+option\+\_\+t}} read\+\_\+config\+\_\+file (\begin{DoxyParamCaption}\item[{char $\ast$}]{path }\end{DoxyParamCaption})}
+
+
+
+Read config file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & Path to config file \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Pointer to allocated config file data 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{confparser_8c_source_l00010}{10}} of file \mbox{\hyperlink{confparser_8c_source}{confparser.\+c}}.
+
+\mbox{\Hypertarget{confparser_8c_a8ffc9afbe6fd1ef789b46c52f20ebb61}\label{confparser_8c_a8ffc9afbe6fd1ef789b46c52f20ebb61}} 
+\index{confparser.c@{confparser.c}!set\_int\_key\_value@{set\_int\_key\_value}}
+\index{set\_int\_key\_value@{set\_int\_key\_value}!confparser.c@{confparser.c}}
+\doxysubsubsection{\texorpdfstring{set\_int\_key\_value()}{set\_int\_key\_value()}}
+{\footnotesize\ttfamily int set\+\_\+int\+\_\+key\+\_\+value (\begin{DoxyParamCaption}\item[{char}]{tmpfilename\mbox{[}$\,$\mbox{]},  }\item[{char}]{datafile\mbox{[}$\,$\mbox{]},  }\item[{char}]{key\mbox{[}$\,$\mbox{]},  }\item[{int}]{value }\end{DoxyParamCaption})}
+
+
+
+Set integer to config file based on key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em tmpfilename} & Temporary filename \\
+\hline
+{\em datafile} & Config file to use \\
+\hline
+{\em key} & Key to set \\
+\hline
+{\em value} & Vaule to assign to key \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Error code 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{confparser_8c_source_l00121}{121}} of file \mbox{\hyperlink{confparser_8c_source}{confparser.\+c}}.
+
