@@ -246,7 +246,7 @@ void request_nickname() {
     flushinp();
     timeout(-1);
     turn_on_header_color(true);
-    getstr(act_nick);
+    getnstr(act_nick, sizeof(act_nick) - 1);
     turn_off_header_color(true);
     curs_set(0);
     noecho();
