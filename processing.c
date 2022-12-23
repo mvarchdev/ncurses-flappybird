@@ -186,7 +186,7 @@ int process_run_level(level *inplvl) {
   int score = run_level(inplvl, &status);
 
   int hof = get_hall_of_fame(act_nick, inplvl->levelnumber);
-  char outstring[128] = {0};
+  char outstring[255] = {0};
   if (score > hof && score > 0) {
     sprintf(outstring,
             "GAME OVER! NEW HIGH SCORE FOR THIS LEVEL! %s - YOUR SCORE: %d "
@@ -246,7 +246,7 @@ void request_nickname() {
     flushinp();
     timeout(-1);
     turn_on_header_color(true);
-    getstr(act_nick);
+    getnstr(act_nick, sizeof(act_nick) - 1);
     turn_off_header_color(true);
     curs_set(0);
     noecho();

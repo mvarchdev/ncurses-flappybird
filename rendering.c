@@ -1209,7 +1209,7 @@ bool render_hof(config_option_t hoff, int yoff, bool dofree,
       if (actoff >= MAPSIZEY - 1) skipalr = true;
 
       if (actoff >= yoff && !skipalr) {
-        char outtext[120] = {0};
+        char outtext[255] = {0};
         char *havelvl = strstr(hoff->key, "#lvl_");
         char nickname[64] = {0};
         memcpy(nickname, hoff->key,
