@@ -1,0 +1,224 @@
+\hypertarget{processing_8c}{}\doxysection{processing.\+c File Reference}
+\label{processing_8c}\index{processing.c@{processing.c}}
+{\ttfamily \#include \char`\"{}processing.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+{\ttfamily \#include $<$ncurses.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}common\+\_\+tools.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}rendering.\+h\char`\"{}}\newline
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item
+\#define \mbox{\hyperlink{processing_8c_a51fe77ad1458c5a22251834d633507b2}{SAVES\+\_\+\+FILE}}~\char`\"{}./assets/saves.\+conf\char`\"{}
+\item
+\#define \mbox{\hyperlink{processing_8c_a3a189694c1e31e185761ac5662434597}{HALLOFFAME\+\_\+\+FILE}}~\char`\"{}./assets/hall\+\_\+of\+\_\+fame.\+conf\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item
+int \mbox{\hyperlink{processing_8c_acb0e28371c2eeb1358048efdbd4d6d96}{get\+\_\+last\+\_\+level}} (char $\ast$nickname)
+\item
+int \mbox{\hyperlink{processing_8c_af1cb20d1fc307a892ee15b3c9b09b867}{set\+\_\+last\+\_\+level}} (char $\ast$nickname, int \mbox{\hyperlink{structlevel}{level}})
+\item
+int \mbox{\hyperlink{processing_8c_a56ee397ee8ea14927eb207d09bf7dc68}{get\+\_\+hall\+\_\+of\+\_\+fame}} (char nickname\mbox{[}$\,$\mbox{]}, int \mbox{\hyperlink{structlevel}{level}})
+\item
+int \mbox{\hyperlink{processing_8c_a51345ba79cbcb4bb6fa932768b820613}{set\+\_\+hall\+\_\+of\+\_\+fame}} (char nickname\mbox{[}$\,$\mbox{]}, int score, int \mbox{\hyperlink{structlevel}{level}})
+\item
+int \mbox{\hyperlink{processing_8c_a762023dc367cf01fd2d5caad0c16943b}{process\+\_\+run\+\_\+level}} (\mbox{\hyperlink{structlevel}{level}} $\ast$inplvl)
+\item
+int \mbox{\hyperlink{processing_8c_a0060b4551ebc7eb335ec006c1a1835d8}{select\+\_\+level\+\_\+dialog}} ()
+\item
+void \mbox{\hyperlink{processing_8c_a2fa3f2bc2eddaa4d2bc615d24f691fe3}{request\+\_\+nickname}} ()
+\item
+int \mbox{\hyperlink{processing_8c_a006dfe53fe35448a8168f00982333554}{show\+\_\+about\+\_\+page}} ()
+\item
+int \mbox{\hyperlink{processing_8c_adc11ec3c51155b1749f121fec62c447e}{show\+\_\+hof}} ()
+\item
+int \mbox{\hyperlink{processing_8c_a8151c1a4040ed20455ebd44e2eae7b4b}{process\+\_\+option}} (int option)
+\item
+int \mbox{\hyperlink{processing_8c_a3778e46596dcdba8117f5a996f19dce5}{run\+\_\+menu}} ()
+\item
+int \mbox{\hyperlink{processing_8c_afa6a262241d44105e6ea2fb15f8a9311}{get\+\_\+last\+\_\+level}} (char nickname\mbox{[}$\,$\mbox{]})
+\item
+int \mbox{\hyperlink{processing_8c_afb34d58e8bc0f08f7fa0859587a4aee4}{set\+\_\+last\+\_\+level}} (char nickname\mbox{[}$\,$\mbox{]}, int inlevel)
+\item
+int \mbox{\hyperlink{processing_8c_a22613a4ed426179d00643f6bf2d90320}{run\+\_\+game}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item
+char \mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\+\_\+nick}} \mbox{[}64\mbox{]} = \{0\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{processing_8c_a3a189694c1e31e185761ac5662434597}\label{processing_8c_a3a189694c1e31e185761ac5662434597}}
+\index{processing.c@{processing.c}!HALLOFFAME\_FILE@{HALLOFFAME\_FILE}}
+\index{HALLOFFAME\_FILE@{HALLOFFAME\_FILE}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{HALLOFFAME\_FILE}{HALLOFFAME\_FILE}}
+{\footnotesize\ttfamily \#define HALLOFFAME\+\_\+\+FILE~\char`\"{}./assets/hall\+\_\+of\+\_\+fame.\+conf\char`\"{}}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00015}{15}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+\mbox{\Hypertarget{processing_8c_a51fe77ad1458c5a22251834d633507b2}\label{processing_8c_a51fe77ad1458c5a22251834d633507b2}}
+\index{processing.c@{processing.c}!SAVES\_FILE@{SAVES\_FILE}}
+\index{SAVES\_FILE@{SAVES\_FILE}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{SAVES\_FILE}{SAVES\_FILE}}
+{\footnotesize\ttfamily \#define SAVES\+\_\+\+FILE~\char`\"{}./assets/saves.\+conf\char`\"{}}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00014}{14}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{processing_8c_a56ee397ee8ea14927eb207d09bf7dc68}\label{processing_8c_a56ee397ee8ea14927eb207d09bf7dc68}}
+\index{processing.c@{processing.c}!get\_hall\_of\_fame@{get\_hall\_of\_fame}}
+\index{get\_hall\_of\_fame@{get\_hall\_of\_fame}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{get\_hall\_of\_fame()}{get\_hall\_of\_fame()}}
+{\footnotesize\ttfamily int get\+\_\+hall\+\_\+of\+\_\+fame (\begin{DoxyParamCaption}\item[{char}]{nickname\mbox{[}$\,$\mbox{]},  }\item[{int}]{level }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00277}{277}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+\mbox{\Hypertarget{processing_8c_acb0e28371c2eeb1358048efdbd4d6d96}\label{processing_8c_acb0e28371c2eeb1358048efdbd4d6d96}}
+\index{processing.c@{processing.c}!get\_last\_level@{get\_last\_level}}
+\index{get\_last\_level@{get\_last\_level}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{get\_last\_level()}{get\_last\_level()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily int get\+\_\+last\+\_\+level (\begin{DoxyParamCaption}\item[{char $\ast$}]{nickname }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{processing_8c_afa6a262241d44105e6ea2fb15f8a9311}\label{processing_8c_afa6a262241d44105e6ea2fb15f8a9311}}
+\index{processing.c@{processing.c}!get\_last\_level@{get\_last\_level}}
+\index{get\_last\_level@{get\_last\_level}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{get\_last\_level()}{get\_last\_level()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily int get\+\_\+last\+\_\+level (\begin{DoxyParamCaption}\item[{char}]{nickname\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00269}{269}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+\mbox{\Hypertarget{processing_8c_a8151c1a4040ed20455ebd44e2eae7b4b}\label{processing_8c_a8151c1a4040ed20455ebd44e2eae7b4b}}
+\index{processing.c@{processing.c}!process\_option@{process\_option}}
+\index{process\_option@{process\_option}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{process\_option()}{process\_option()}}
+{\footnotesize\ttfamily int process\+\_\+option (\begin{DoxyParamCaption}\item[{int}]{option }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00028}{28}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+\mbox{\Hypertarget{processing_8c_a762023dc367cf01fd2d5caad0c16943b}\label{processing_8c_a762023dc367cf01fd2d5caad0c16943b}}
+\index{processing.c@{processing.c}!process\_run\_level@{process\_run\_level}}
+\index{process\_run\_level@{process\_run\_level}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{process\_run\_level()}{process\_run\_level()}}
+{\footnotesize\ttfamily int process\+\_\+run\+\_\+level (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structlevel}{level}} $\ast$}]{inplvl }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00170}{170}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+\mbox{\Hypertarget{processing_8c_a2fa3f2bc2eddaa4d2bc615d24f691fe3}\label{processing_8c_a2fa3f2bc2eddaa4d2bc615d24f691fe3}}
+\index{processing.c@{processing.c}!request\_nickname@{request\_nickname}}
+\index{request\_nickname@{request\_nickname}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{request\_nickname()}{request\_nickname()}}
+{\footnotesize\ttfamily void request\+\_\+nickname (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00239}{239}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+\mbox{\Hypertarget{processing_8c_a22613a4ed426179d00643f6bf2d90320}\label{processing_8c_a22613a4ed426179d00643f6bf2d90320}}
+\index{processing.c@{processing.c}!run\_game@{run\_game}}
+\index{run\_game@{run\_game}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{run\_game()}{run\_game()}}
+{\footnotesize\ttfamily int run\+\_\+game (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00325}{325}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+\mbox{\Hypertarget{processing_8c_a3778e46596dcdba8117f5a996f19dce5}\label{processing_8c_a3778e46596dcdba8117f5a996f19dce5}}
+\index{processing.c@{processing.c}!run\_menu@{run\_menu}}
+\index{run\_menu@{run\_menu}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{run\_menu()}{run\_menu()}}
+{\footnotesize\ttfamily int run\+\_\+menu (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00207}{207}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+\mbox{\Hypertarget{processing_8c_a0060b4551ebc7eb335ec006c1a1835d8}\label{processing_8c_a0060b4551ebc7eb335ec006c1a1835d8}}
+\index{processing.c@{processing.c}!select\_level\_dialog@{select\_level\_dialog}}
+\index{select\_level\_dialog@{select\_level\_dialog}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{select\_level\_dialog()}{select\_level\_dialog()}}
+{\footnotesize\ttfamily int select\+\_\+level\+\_\+dialog (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00079}{79}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+\mbox{\Hypertarget{processing_8c_a51345ba79cbcb4bb6fa932768b820613}\label{processing_8c_a51345ba79cbcb4bb6fa932768b820613}}
+\index{processing.c@{processing.c}!set\_hall\_of\_fame@{set\_hall\_of\_fame}}
+\index{set\_hall\_of\_fame@{set\_hall\_of\_fame}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{set\_hall\_of\_fame()}{set\_hall\_of\_fame()}}
+{\footnotesize\ttfamily int set\+\_\+hall\+\_\+of\+\_\+fame (\begin{DoxyParamCaption}\item[{char}]{nickname\mbox{[}$\,$\mbox{]},  }\item[{int}]{score,  }\item[{int}]{level }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00283}{283}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+\mbox{\Hypertarget{processing_8c_af1cb20d1fc307a892ee15b3c9b09b867}\label{processing_8c_af1cb20d1fc307a892ee15b3c9b09b867}}
+\index{processing.c@{processing.c}!set\_last\_level@{set\_last\_level}}
+\index{set\_last\_level@{set\_last\_level}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{set\_last\_level()}{set\_last\_level()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily int set\+\_\+last\+\_\+level (\begin{DoxyParamCaption}\item[{char $\ast$}]{nickname,  }\item[{int}]{level }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{processing_8c_afb34d58e8bc0f08f7fa0859587a4aee4}\label{processing_8c_afb34d58e8bc0f08f7fa0859587a4aee4}}
+\index{processing.c@{processing.c}!set\_last\_level@{set\_last\_level}}
+\index{set\_last\_level@{set\_last\_level}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{set\_last\_level()}{set\_last\_level()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily int set\+\_\+last\+\_\+level (\begin{DoxyParamCaption}\item[{char}]{nickname\mbox{[}$\,$\mbox{]},  }\item[{int}]{inlevel }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00273}{273}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+\mbox{\Hypertarget{processing_8c_a006dfe53fe35448a8168f00982333554}\label{processing_8c_a006dfe53fe35448a8168f00982333554}}
+\index{processing.c@{processing.c}!show\_about\_page@{show\_about\_page}}
+\index{show\_about\_page@{show\_about\_page}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{show\_about\_page()}{show\_about\_page()}}
+{\footnotesize\ttfamily int show\+\_\+about\+\_\+page (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00141}{141}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+\mbox{\Hypertarget{processing_8c_adc11ec3c51155b1749f121fec62c447e}\label{processing_8c_adc11ec3c51155b1749f121fec62c447e}}
+\index{processing.c@{processing.c}!show\_hof@{show\_hof}}
+\index{show\_hof@{show\_hof}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{show\_hof()}{show\_hof()}}
+{\footnotesize\ttfamily int show\+\_\+hof (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00289}{289}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}\label{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}}
+\index{processing.c@{processing.c}!act\_nick@{act\_nick}}
+\index{act\_nick@{act\_nick}!processing.c@{processing.c}}
+\doxysubsubsection{\texorpdfstring{act\_nick}{act\_nick}}
+{\footnotesize\ttfamily char act\+\_\+nick\mbox{[}64\mbox{]} = \{0\}}
+
+
+
+Definition at line \mbox{\hyperlink{processing_8c_source_l00017}{17}} of file \mbox{\hyperlink{processing_8c_source}{processing.\+c}}.
+

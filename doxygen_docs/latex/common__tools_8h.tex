@@ -1,0 +1,77 @@
+\hypertarget{common__tools_8h}{}\doxysection{common\+\_\+tools.\+h File Reference}
+\label{common__tools_8h}\index{common\_tools.h@{common\_tools.h}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item
+unsigned int \mbox{\hyperlink{common__tools_8h_a092e2f7ee1a5f651d3c3a95e9b55d46a}{rand\+\_\+gen}} (int min, int max)
+\begin{DoxyCompactList}\small\item\em Will return random integer based on min max definitions. \end{DoxyCompactList}\item
+int \mbox{\hyperlink{common__tools_8h_afd2fe3756543f698c07bcbf76e4b04e5}{msleep}} (long msec)
+\begin{DoxyCompactList}\small\item\em Sleep for the requested number of milliseconds. \end{DoxyCompactList}\item
+long long \mbox{\hyperlink{common__tools_8h_a3a98f4f7e6c28e389e7165d6e35bced6}{time\+In\+Milliseconds}} ()
+\begin{DoxyCompactList}\small\item\em Get actual time in ms. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{common__tools_8h_afd2fe3756543f698c07bcbf76e4b04e5}\label{common__tools_8h_afd2fe3756543f698c07bcbf76e4b04e5}}
+\index{common\_tools.h@{common\_tools.h}!msleep@{msleep}}
+\index{msleep@{msleep}!common\_tools.h@{common\_tools.h}}
+\doxysubsubsection{\texorpdfstring{msleep()}{msleep()}}
+{\footnotesize\ttfamily int msleep (\begin{DoxyParamCaption}\item[{long}]{msec }\end{DoxyParamCaption})}
+
+
+
+Sleep for the requested number of milliseconds.
+
+
+\begin{DoxyParams}{Parameters}
+{\em msec} & how long it should block \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Error code
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{common__tools_8c_source_l00021}{21}} of file \mbox{\hyperlink{common__tools_8c_source}{common\+\_\+tools.\+c}}.
+
+\mbox{\Hypertarget{common__tools_8h_a092e2f7ee1a5f651d3c3a95e9b55d46a}\label{common__tools_8h_a092e2f7ee1a5f651d3c3a95e9b55d46a}}
+\index{common\_tools.h@{common\_tools.h}!rand\_gen@{rand\_gen}}
+\index{rand\_gen@{rand\_gen}!common\_tools.h@{common\_tools.h}}
+\doxysubsubsection{\texorpdfstring{rand\_gen()}{rand\_gen()}}
+{\footnotesize\ttfamily unsigned int rand\+\_\+gen (\begin{DoxyParamCaption}\item[{int}]{min,  }\item[{int}]{max }\end{DoxyParamCaption})}
+
+
+
+Will return random integer based on min max definitions.
+
+
+\begin{DoxyParams}{Parameters}
+{\em min} & Minimum number that should return \\
+\hline
+{\em max} & Maximum number that should return \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Random number based on min max definition
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{common__tools_8c_source_l00014}{14}} of file \mbox{\hyperlink{common__tools_8c_source}{common\+\_\+tools.\+c}}.
+
+\mbox{\Hypertarget{common__tools_8h_a3a98f4f7e6c28e389e7165d6e35bced6}\label{common__tools_8h_a3a98f4f7e6c28e389e7165d6e35bced6}}
+\index{common\_tools.h@{common\_tools.h}!timeInMilliseconds@{timeInMilliseconds}}
+\index{timeInMilliseconds@{timeInMilliseconds}!common\_tools.h@{common\_tools.h}}
+\doxysubsubsection{\texorpdfstring{timeInMilliseconds()}{timeInMilliseconds()}}
+{\footnotesize\ttfamily long long time\+In\+Milliseconds (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get actual time in ms.
+
+\begin{DoxyReturn}{Returns}
+Actual time in miliseconds
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{common__tools_8c_source_l00042}{42}} of file \mbox{\hyperlink{common__tools_8c_source}{common\+\_\+tools.\+c}}.
+

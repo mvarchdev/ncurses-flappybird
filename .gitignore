@@ -17,9 +17,7 @@
 !assets
 !assets/**
 !Makefile
-!html
-!latex
-!html/**
-!latex/**
+!doxygen_docs
+!doxygen_docs/**
 !qat.doxygen
 !README.md

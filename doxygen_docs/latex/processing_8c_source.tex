@@ -1,0 +1,334 @@
+\hypertarget{processing_8c_source}{}\doxysection{processing.\+c}
+\mbox{\hyperlink{processing_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00001}00001 \textcolor{comment}{// Copyright 2022 <Maros Varchola -\/ mvarchdev>}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00002}00002 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00003}00003 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{processing_8h}{processing.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00004}00004 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00005}00005 \textcolor{preprocessor}{\#include <ctype.h>}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00006}00006 \textcolor{preprocessor}{\#include <ncurses.h>}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00007}00007 \textcolor{preprocessor}{\#include <stdlib.h>}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00008}00008 \textcolor{preprocessor}{\#include <string.h>}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00009}00009 \textcolor{preprocessor}{\#include <unistd.h>}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00010}00010 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00011}00011 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{common__tools_8h}{common\_tools.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00012}00012 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{rendering_8h}{rendering.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00013}00013 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00014}\mbox{\hyperlink{processing_8c_a51fe77ad1458c5a22251834d633507b2}{00014}} \textcolor{preprocessor}{\#define SAVES\_FILE "{}./assets/saves.conf"{}}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00015}\mbox{\hyperlink{processing_8c_a3a189694c1e31e185761ac5662434597}{00015}} \textcolor{preprocessor}{\#define HALLOFFAME\_FILE "{}./assets/hall\_of\_fame.conf"{}}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00016}00016 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00017}\mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{00017}} \textcolor{keywordtype}{char} \mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}}[64] = \{0\};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00018}\mbox{\hyperlink{processing_8c_acb0e28371c2eeb1358048efdbd4d6d96}{00018}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_acb0e28371c2eeb1358048efdbd4d6d96}{get\_last\_level}}(\textcolor{keywordtype}{char} *nickname);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00019}\mbox{\hyperlink{processing_8c_af1cb20d1fc307a892ee15b3c9b09b867}{00019}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_af1cb20d1fc307a892ee15b3c9b09b867}{set\_last\_level}}(\textcolor{keywordtype}{char} *nickname, \textcolor{keywordtype}{int} \mbox{\hyperlink{structlevel}{level}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00020}00020 \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a56ee397ee8ea14927eb207d09bf7dc68}{get\_hall\_of\_fame}}(\textcolor{keywordtype}{char} nickname[], \textcolor{keywordtype}{int} \mbox{\hyperlink{structlevel}{level}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00021}00021 \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a51345ba79cbcb4bb6fa932768b820613}{set\_hall\_of\_fame}}(\textcolor{keywordtype}{char} nickname[], \textcolor{keywordtype}{int} score, \textcolor{keywordtype}{int} \mbox{\hyperlink{structlevel}{level}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00022}00022 \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a762023dc367cf01fd2d5caad0c16943b}{process\_run\_level}}(\mbox{\hyperlink{structlevel}{level}} *inplvl);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00023}00023 \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a0060b4551ebc7eb335ec006c1a1835d8}{select\_level\_dialog}}();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00024}00024 \textcolor{keywordtype}{void} \mbox{\hyperlink{processing_8c_a2fa3f2bc2eddaa4d2bc615d24f691fe3}{request\_nickname}}();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00025}00025 \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a006dfe53fe35448a8168f00982333554}{show\_about\_page}}();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00026}00026 \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_adc11ec3c51155b1749f121fec62c447e}{show\_hof}}();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00027}00027 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00028}\mbox{\hyperlink{processing_8c_a8151c1a4040ed20455ebd44e2eae7b4b}{00028}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a8151c1a4040ed20455ebd44e2eae7b4b}{process\_option}}(\textcolor{keywordtype}{int} option) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00029}00029   \textcolor{keywordflow}{switch} (option) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00030}00030     \textcolor{keywordflow}{case} 0: \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00031}00031       \textcolor{keywordtype}{int} last\_level = \mbox{\hyperlink{processing_8c_acb0e28371c2eeb1358048efdbd4d6d96}{get\_last\_level}}(\mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00032}00032 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00033}00033       \textcolor{keywordflow}{if} (last\_level > 0) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00034}00034         \mbox{\hyperlink{structlevel}{level}} loadedlvl = \mbox{\hyperlink{rendering_8c_a58120f86dcc10603fc0a535280703715}{load\_level\_file}}(last\_level);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00035}00035         \textcolor{keywordflow}{if} (!loadedlvl.\mbox{\hyperlink{structlevel_a3ce30a18c263b51f7eac17b456ae56fc}{loaded}}) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00036}00036           \mbox{\hyperlink{rendering_8c_abf0f9e528225dd107875a8b0c3847be7}{render\_header\_string}}(}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00037}00037               \textcolor{stringliteral}{"{}The level that is saved, does not exist! Setting to level 1."{}}, 0,}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00038}00038               \textcolor{keyword}{true}, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00039}00039           refresh();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00040}00040           \mbox{\hyperlink{common__tools_8c_afd2fe3756543f698c07bcbf76e4b04e5}{msleep}}(1500);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00041}00041           flushinp();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00042}00042           \mbox{\hyperlink{processing_8c_af1cb20d1fc307a892ee15b3c9b09b867}{set\_last\_level}}(\mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}}, 1);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00043}00043         \} \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00044}00044           \mbox{\hyperlink{processing_8c_a762023dc367cf01fd2d5caad0c16943b}{process\_run\_level}}(\&loadedlvl);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00045}00045       \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00046}00046         \mbox{\hyperlink{rendering_8c_abf0f9e528225dd107875a8b0c3847be7}{render\_header\_string}}(}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00047}00047             \textcolor{stringliteral}{"{}You are playing this game for the first time, running level 1"{}}, 0,}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00048}00048             \textcolor{keyword}{true}, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00049}00049         refresh();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00050}00050         \mbox{\hyperlink{common__tools_8c_afd2fe3756543f698c07bcbf76e4b04e5}{msleep}}(1500);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00051}00051         flushinp();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00052}00052         \mbox{\hyperlink{structlevel}{level}} loadedlvl = \mbox{\hyperlink{rendering_8c_a58120f86dcc10603fc0a535280703715}{load\_level\_file}}(1);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00053}00053         \mbox{\hyperlink{processing_8c_a762023dc367cf01fd2d5caad0c16943b}{process\_run\_level}}(\&loadedlvl);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00054}00054       \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00055}00055     \} \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00056}00056     \textcolor{keywordflow}{case} 1: \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00057}00057       \textcolor{keywordtype}{int} selectedlvl = \mbox{\hyperlink{processing_8c_a0060b4551ebc7eb335ec006c1a1835d8}{select\_level\_dialog}}();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00058}00058       \textcolor{keywordflow}{if} (selectedlvl > 0) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00059}00059         \mbox{\hyperlink{structlevel}{level}} loadedlvl = \mbox{\hyperlink{rendering_8c_a58120f86dcc10603fc0a535280703715}{load\_level\_file}}(selectedlvl);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00060}00060         \mbox{\hyperlink{processing_8c_a762023dc367cf01fd2d5caad0c16943b}{process\_run\_level}}(\&loadedlvl);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00061}00061       \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00062}00062     \} \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00063}00063     \textcolor{keywordflow}{case} 2:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00064}00064       \mbox{\hyperlink{processing_8c_a2fa3f2bc2eddaa4d2bc615d24f691fe3}{request\_nickname}}();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00065}00065       \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00066}00066     \textcolor{keywordflow}{case} 3:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00067}00067       \mbox{\hyperlink{processing_8c_adc11ec3c51155b1749f121fec62c447e}{show\_hof}}();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00068}00068       \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00069}00069     \textcolor{keywordflow}{case} 4:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00070}00070       \mbox{\hyperlink{processing_8c_a006dfe53fe35448a8168f00982333554}{show\_about\_page}}();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00071}00071       \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00072}00072 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00073}00073     \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00074}00074       \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00075}00075   \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00076}00076   \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00077}00077 \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00078}00078 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00079}\mbox{\hyperlink{processing_8c_a0060b4551ebc7eb335ec006c1a1835d8}{00079}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a0060b4551ebc7eb335ec006c1a1835d8}{select\_level\_dialog}}() \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00080}00080   \textcolor{keywordtype}{int} actoption = 0, actlvl = 1, scroll = 0;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00081}00081   keypad(stdscr, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00082}00082   \textcolor{keywordtype}{int} degrees = 0;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00083}00083   \textcolor{keywordflow}{while} (\textcolor{keyword}{true}) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00084}00084     \textcolor{keywordtype}{bool} refrall = \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00085}00085     \textcolor{keywordtype}{int} maxscroll = 0;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00086}00086     \mbox{\hyperlink{rendering_8c_aa158b9091f7cd0f03b32d93d16e79dbb}{print\_level\_options}}(actoption);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00087}00087     \mbox{\hyperlink{structlevel}{level}} tmplvl = \mbox{\hyperlink{rendering_8c_a58120f86dcc10603fc0a535280703715}{load\_level\_file}}(actlvl);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00088}00088     maxscroll = \mbox{\hyperlink{rendering_8c_ade699f731a89d19e0962c56e8dbf8c80}{print\_level\_info}}(\&tmplvl, scroll);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00089}00089 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00090}00090     refresh();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00091}00091     flushinp();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00092}00092     timeout(0);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00093}00093 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00094}00094     \textcolor{keywordflow}{while} (\textcolor{keyword}{true}) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00095}00095       degrees = \mbox{\hyperlink{rendering_8c_a6e2a776f2e3c99338bd04e36ea87d549}{render\_bird\_floating}}(\&tmplvl, degrees);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00096}00096       \textcolor{keywordflow}{switch} (getch()) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00097}00097         \textcolor{keywordflow}{case} KEY\_RIGHT:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00098}00098           \textcolor{keywordflow}{if} (actoption < 5) actoption++;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00099}00099           refrall = \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00100}00100           \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00101}00101         \textcolor{keywordflow}{case} KEY\_LEFT:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00102}00102           \textcolor{keywordflow}{if} (actoption > 0) actoption-\/-\/;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00103}00103           refrall = \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00104}00104           \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00105}00105         \textcolor{keywordflow}{case} \textcolor{charliteral}{'\(\backslash\)n'}:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00106}00106           refrall = \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00107}00107           \textcolor{keywordflow}{switch} (actoption) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00108}00108             \textcolor{keywordflow}{case} 0:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00109}00109               \textcolor{keywordflow}{return} actlvl;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00110}00110             \textcolor{keywordflow}{case} 1:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00111}00111               \textcolor{keywordflow}{if} (scroll < maxscroll) scroll++;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00112}00112               \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00113}00113             \textcolor{keywordflow}{case} 2:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00114}00114               \textcolor{keywordflow}{if} (scroll > 0) scroll-\/-\/;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00115}00115               \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00116}00116             \textcolor{keywordflow}{case} 3:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00117}00117               \textcolor{keywordflow}{if} (\mbox{\hyperlink{rendering_8c_a58120f86dcc10603fc0a535280703715}{load\_level\_file}}(actlvl + 1).loaded) actlvl++;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00118}00118               \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00119}00119             \textcolor{keywordflow}{case} 4:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00120}00120               \textcolor{keywordflow}{if} (actlvl -\/ 1 > 0 \&\& \mbox{\hyperlink{rendering_8c_a58120f86dcc10603fc0a535280703715}{load\_level\_file}}(actlvl -\/ 1).loaded)}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00121}00121                 actlvl-\/-\/;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00122}00122               \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00123}00123             \textcolor{keywordflow}{case} 5:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00124}00124               keypad(stdscr, \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00125}00125               \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00126}00126 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00127}00127             \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00128}00128               \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00129}00129           \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00130}00130           \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00131}00131 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00132}00132         \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00133}00133           \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00134}00134       \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00135}00135 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00136}00136       \textcolor{keywordflow}{if} (refrall) \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00137}00137     \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00138}00138   \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00139}00139 \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00140}00140 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00141}\mbox{\hyperlink{processing_8c_a006dfe53fe35448a8168f00982333554}{00141}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a006dfe53fe35448a8168f00982333554}{show\_about\_page}}() \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00142}00142   \textcolor{keywordtype}{int} scroll = 0;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00143}00143   timeout(-\/1);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00144}00144   keypad(stdscr, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00145}00145   \mbox{\hyperlink{rendering_8c_abf0f9e528225dd107875a8b0c3847be7}{render\_header\_string}}(\textcolor{stringliteral}{"{}This is \(\backslash\)"{}about this game\(\backslash\)"{} page, to exit, press 'b'"{}},}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00146}00146                        1, \textcolor{keyword}{true}, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00147}00147   \textcolor{keywordflow}{while} (\textcolor{keyword}{true}) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00148}00148     \textcolor{keywordtype}{int} maxscroll = \mbox{\hyperlink{rendering_8c_a7003d3b5992edeac9fc448cd63b53fda}{render\_about\_page}}(scroll);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00149}00149     refresh();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00150}00150     flushinp();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00151}00151     \textcolor{keywordtype}{int} ch = getch();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00152}00152     \textcolor{keywordflow}{switch} (tolower(ch)) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00153}00153       \textcolor{keywordflow}{case} KEY\_UP:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00154}00154         \textcolor{keywordflow}{if} (scroll > 0) scroll-\/-\/;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00155}00155         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00156}00156       \textcolor{keywordflow}{case} KEY\_DOWN:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00157}00157         \textcolor{keywordflow}{if} (scroll < maxscroll) scroll++;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00158}00158         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00159}00159       \textcolor{keywordflow}{case} \textcolor{charliteral}{'b'}:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00160}00160         timeout(0);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00161}00161         keypad(stdscr, \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00162}00162         \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00163}00163 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00164}00164       \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00165}00165         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00166}00166     \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00167}00167   \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00168}00168 \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00169}00169 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00170}\mbox{\hyperlink{processing_8c_a762023dc367cf01fd2d5caad0c16943b}{00170}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a762023dc367cf01fd2d5caad0c16943b}{process\_run\_level}}(\mbox{\hyperlink{structlevel}{level}} *inplvl) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00171}00171   \textcolor{keywordflow}{if} (!inplvl) \textcolor{keywordflow}{return} -\/1;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00172}00172 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00173}00173   \textcolor{keywordflow}{if} (!inplvl-\/>\mbox{\hyperlink{structlevel_a3ce30a18c263b51f7eac17b456ae56fc}{loaded}}) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00174}00174     \textcolor{keywordtype}{char} outputstr[60] = \{0\};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00175}00175     sprintf(outputstr, \textcolor{stringliteral}{"{}The level \%d does not exist! Exiting..."{}},}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00176}00176             inplvl-\/>\mbox{\hyperlink{structlevel_acbbc106a93753a34e4a1bee2f1c0c9c2}{levelnumber}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00177}00177     \mbox{\hyperlink{rendering_8c_abf0f9e528225dd107875a8b0c3847be7}{render\_header\_string}}(outputstr, 0, \textcolor{keyword}{true}, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00178}00178     refresh();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00179}00179     \mbox{\hyperlink{common__tools_8c_afd2fe3756543f698c07bcbf76e4b04e5}{msleep}}(1500);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00180}00180     flushinp();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00181}00181     \textcolor{keywordflow}{return} -\/1;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00182}00182   \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00183}00183 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00184}00184   \textcolor{keywordtype}{int} status = 0;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00185}00185   \mbox{\hyperlink{processing_8c_af1cb20d1fc307a892ee15b3c9b09b867}{set\_last\_level}}(\mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}}, inplvl-\/>\mbox{\hyperlink{structlevel_acbbc106a93753a34e4a1bee2f1c0c9c2}{levelnumber}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00186}00186   \textcolor{keywordtype}{int} score = \mbox{\hyperlink{rendering_8c_a16c607bcc815976ede2db9eb6d14c3cf}{run\_level}}(inplvl, \&status);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00187}00187 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00188}00188   \textcolor{keywordtype}{int} hof = \mbox{\hyperlink{processing_8c_a56ee397ee8ea14927eb207d09bf7dc68}{get\_hall\_of\_fame}}(\mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}}, inplvl-\/>\mbox{\hyperlink{structlevel_acbbc106a93753a34e4a1bee2f1c0c9c2}{levelnumber}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00189}00189   \textcolor{keywordtype}{char} outstring[255] = \{0\};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00190}00190   \textcolor{keywordflow}{if} (score > hof \&\& score > 0) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00191}00191     sprintf(outstring,}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00192}00192             \textcolor{stringliteral}{"{}GAME OVER! NEW HIGH SCORE FOR THIS LEVEL! \%s -\/ YOUR SCORE: \%d "{}}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00193}00193             \textcolor{stringliteral}{"{}[SAVING IT TO HALL OF FAME]"{}},}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00194}00194             \mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}}, score);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00195}00195     \mbox{\hyperlink{processing_8c_a51345ba79cbcb4bb6fa932768b820613}{set\_hall\_of\_fame}}(\mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}}, score, inplvl-\/>\mbox{\hyperlink{structlevel_acbbc106a93753a34e4a1bee2f1c0c9c2}{levelnumber}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00196}00196   \} \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00197}00197     sprintf(outstring, \textcolor{stringliteral}{"{}GAME OVER! \%s -\/ YOUR SCORE: \%d"{}}, \mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}}, score);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00198}00198 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00199}00199   \mbox{\hyperlink{rendering_8c_abf0f9e528225dd107875a8b0c3847be7}{render\_header\_string}}(outstring, -\/1, \textcolor{keyword}{true}, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00200}00200   refresh();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00201}00201 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00202}00202   \mbox{\hyperlink{common__tools_8c_afd2fe3756543f698c07bcbf76e4b04e5}{msleep}}(1500);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00203}00203   flushinp();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00204}00204   \textcolor{keywordflow}{return} score;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00205}00205 \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00206}00206 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00207}\mbox{\hyperlink{processing_8c_a3778e46596dcdba8117f5a996f19dce5}{00207}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a3778e46596dcdba8117f5a996f19dce5}{run\_menu}}() \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00208}00208   \textcolor{keywordtype}{int} actoption = 0;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00209}00209   \textcolor{keywordflow}{while} (\textcolor{keyword}{true}) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00210}00210     keypad(stdscr, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00211}00211     \mbox{\hyperlink{rendering_8c_a27e030ec3326bdc138079d2bb9625aac}{render\_menu}}(actoption, \mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00212}00212     refresh();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00213}00213     flushinp();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00214}00214     timeout(-\/1);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00215}00215     \textcolor{keywordtype}{int} ch = getch();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00216}00216     \textcolor{keywordflow}{switch} (ch) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00217}00217       \textcolor{keywordflow}{case} KEY\_RIGHT:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00218}00218         \textcolor{keywordflow}{if} (actoption < \mbox{\hyperlink{rendering_8h_adc89209b65345d7ace12c88c297e300f}{menu\_inem\_n}} -\/ 1) actoption++;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00219}00219 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00220}00220         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00221}00221       \textcolor{keywordflow}{case} KEY\_LEFT:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00222}00222         \textcolor{keywordflow}{if} (actoption > 0) actoption-\/-\/;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00223}00223         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00224}00224       \textcolor{keywordflow}{case} \textcolor{charliteral}{'\(\backslash\)n'}:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00225}00225         \textcolor{keywordflow}{if} (actoption == 5) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00226}00226           keypad(stdscr, \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00227}00227           \textcolor{keywordflow}{return} 1;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00228}00228         \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00229}00229 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00230}00230         \mbox{\hyperlink{processing_8c_a8151c1a4040ed20455ebd44e2eae7b4b}{process\_option}}(actoption);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00231}00231         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00232}00232 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00233}00233       \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00234}00234         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00235}00235     \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00236}00236   \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00237}00237 \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00238}00238 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00239}\mbox{\hyperlink{processing_8c_a2fa3f2bc2eddaa4d2bc615d24f691fe3}{00239}} \textcolor{keywordtype}{void} \mbox{\hyperlink{processing_8c_a2fa3f2bc2eddaa4d2bc615d24f691fe3}{request\_nickname}}() \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00240}00240   \textcolor{keywordflow}{while} (\textcolor{keyword}{true}) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00241}00241     \mbox{\hyperlink{rendering_8c_abf0f9e528225dd107875a8b0c3847be7}{render\_header\_string}}(\textcolor{stringliteral}{"{}Please write here your nickname (max 63 chars): "{}}, 1,}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00242}00242                          \textcolor{keyword}{true}, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00243}00243     refresh();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00244}00244     echo();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00245}00245     curs\_set(1);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00246}00246     flushinp();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00247}00247     timeout(-\/1);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00248}00248     \mbox{\hyperlink{rendering_8c_a6768f5d7367a1c6b462bc848861b1323}{turn\_on\_header\_color}}(\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00249}00249     getnstr(\mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}}, \textcolor{keyword}{sizeof}(\mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}}) -\/ 1);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00250}00250     \mbox{\hyperlink{rendering_8c_a68efe7cba05ccbc0df0ffcd16a48b341}{turn\_off\_header\_color}}(\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00251}00251     curs\_set(0);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00252}00252     noecho();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00253}00253     \textcolor{keywordflow}{if} (strcmp(\textcolor{stringliteral}{"{}"{}}, \mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}}) == 0) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00254}00254       \mbox{\hyperlink{rendering_8c_abf0f9e528225dd107875a8b0c3847be7}{render\_header\_string}}(\textcolor{stringliteral}{"{}Your nick cannot be empty!"{}}, 1, \textcolor{keyword}{true}, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00255}00255       refresh();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00256}00256       \mbox{\hyperlink{common__tools_8c_afd2fe3756543f698c07bcbf76e4b04e5}{msleep}}(1500);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00257}00257     \} \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00258}00258       \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00259}00259   \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00260}00260 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00261}00261   \textcolor{keywordtype}{char} outmessage[120] = \{0\};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00262}00262   sprintf(outmessage, \textcolor{stringliteral}{"{}Your nickname is now: \%s"{}}, \mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00263}00263   \mbox{\hyperlink{rendering_8c_abf0f9e528225dd107875a8b0c3847be7}{render\_header\_string}}(outmessage, 1, \textcolor{keyword}{true}, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00264}00264   refresh();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00265}00265 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00266}00266   \mbox{\hyperlink{common__tools_8c_afd2fe3756543f698c07bcbf76e4b04e5}{msleep}}(1500);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00267}00267 \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00268}00268 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00269}\mbox{\hyperlink{processing_8c_afa6a262241d44105e6ea2fb15f8a9311}{00269}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_acb0e28371c2eeb1358048efdbd4d6d96}{get\_last\_level}}(\textcolor{keywordtype}{char} nickname[]) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00270}00270   \textcolor{keywordflow}{return} \mbox{\hyperlink{confparser_8c_ac61ef7dc6f43e1cf194ef8139114428e}{get\_int\_key\_value}}(\mbox{\hyperlink{processing_8c_a51fe77ad1458c5a22251834d633507b2}{SAVES\_FILE}}, nickname);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00271}00271 \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00272}00272 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00273}\mbox{\hyperlink{processing_8c_afb34d58e8bc0f08f7fa0859587a4aee4}{00273}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_af1cb20d1fc307a892ee15b3c9b09b867}{set\_last\_level}}(\textcolor{keywordtype}{char} nickname[], \textcolor{keywordtype}{int} inlevel) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00274}00274   \textcolor{keywordflow}{return} \mbox{\hyperlink{confparser_8c_a8ffc9afbe6fd1ef789b46c52f20ebb61}{set\_int\_key\_value}}(\textcolor{stringliteral}{"{}./lvltmpfile"{}}, \mbox{\hyperlink{processing_8c_a51fe77ad1458c5a22251834d633507b2}{SAVES\_FILE}}, nickname, inlevel);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00275}00275 \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00276}00276 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00277}\mbox{\hyperlink{processing_8c_a56ee397ee8ea14927eb207d09bf7dc68}{00277}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a56ee397ee8ea14927eb207d09bf7dc68}{get\_hall\_of\_fame}}(\textcolor{keywordtype}{char} nickname[], \textcolor{keywordtype}{int} \mbox{\hyperlink{structlevel}{level}}) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00278}00278   \textcolor{keywordtype}{char} findkey[120] = \{0\};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00279}00279   sprintf(findkey, \textcolor{stringliteral}{"{}\%s\#lvl\_\%d\#"{}}, nickname, \mbox{\hyperlink{structlevel}{level}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00280}00280   \textcolor{keywordflow}{return} \mbox{\hyperlink{confparser_8c_ac61ef7dc6f43e1cf194ef8139114428e}{get\_int\_key\_value}}(\mbox{\hyperlink{processing_8c_a3a189694c1e31e185761ac5662434597}{HALLOFFAME\_FILE}}, findkey);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00281}00281 \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00282}00282 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00283}\mbox{\hyperlink{processing_8c_a51345ba79cbcb4bb6fa932768b820613}{00283}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a51345ba79cbcb4bb6fa932768b820613}{set\_hall\_of\_fame}}(\textcolor{keywordtype}{char} nickname[], \textcolor{keywordtype}{int} score, \textcolor{keywordtype}{int} \mbox{\hyperlink{structlevel}{level}}) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00284}00284   \textcolor{keywordtype}{char} setkey[120] = \{0\};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00285}00285   sprintf(setkey, \textcolor{stringliteral}{"{}\%s\#lvl\_\%d\#"{}}, nickname, \mbox{\hyperlink{structlevel}{level}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00286}00286   \textcolor{keywordflow}{return} \mbox{\hyperlink{confparser_8c_a8ffc9afbe6fd1ef789b46c52f20ebb61}{set\_int\_key\_value}}(\textcolor{stringliteral}{"{}./hoftmpfile"{}}, \mbox{\hyperlink{processing_8c_a3a189694c1e31e185761ac5662434597}{HALLOFFAME\_FILE}}, setkey, score);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00287}00287 \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00288}00288 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00289}\mbox{\hyperlink{processing_8c_adc11ec3c51155b1749f121fec62c447e}{00289}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_adc11ec3c51155b1749f121fec62c447e}{show\_hof}}() \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00290}00290   \textcolor{keywordtype}{int} scroll = 0;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00291}00291   timeout(-\/1);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00292}00292   keypad(stdscr, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00293}00293   \mbox{\hyperlink{rendering_8c_abf0f9e528225dd107875a8b0c3847be7}{render\_header\_string}}(\textcolor{stringliteral}{"{}This is \(\backslash\)"{}HALL OF FAME\(\backslash\)"{} page, to exit, press 'b'"{}}, 1,}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00294}00294                        \textcolor{keyword}{true}, \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00295}00295   \mbox{\hyperlink{structconfig__option}{config\_option\_t}} hof = \mbox{\hyperlink{confparser_8c_afda32bfcd47ea734781a13a05ab4c33b}{read\_config\_file}}(\mbox{\hyperlink{processing_8c_a3a189694c1e31e185761ac5662434597}{HALLOFFAME\_FILE}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00296}00296   \textcolor{keywordflow}{while} (\textcolor{keyword}{true}) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00297}00297     \textcolor{keywordtype}{bool} scrollalowed = \mbox{\hyperlink{rendering_8c_a2225ffc0139e3b835ebb2016f038e238}{render\_hof}}(hof, scroll, \textcolor{keyword}{false}, \mbox{\hyperlink{processing_8c_a9a3c8aea8dcd71a394c19655b47ed72a}{act\_nick}});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00298}00298     refresh();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00299}00299     flushinp();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00300}00300     \textcolor{keywordtype}{int} ch = getch();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00301}00301     \textcolor{keywordflow}{switch} (tolower(ch)) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00302}00302       \textcolor{keywordflow}{case} KEY\_UP:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00303}00303         \textcolor{keywordflow}{if} (scroll > 0) scroll-\/-\/;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00304}00304         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00305}00305       \textcolor{keywordflow}{case} KEY\_DOWN:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00306}00306         \textcolor{keywordflow}{if} (scrollalowed) scroll++;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00307}00307         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00308}00308       \textcolor{keywordflow}{case} \textcolor{charliteral}{'b'}:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00309}00309         timeout(0);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00310}00310         keypad(stdscr, \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00311}00311         \textcolor{keywordflow}{while} (hof) \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00312}00312           \mbox{\hyperlink{structconfig__option}{config\_option\_t}} prev = hof-\/>\mbox{\hyperlink{structconfig__option_af7e3030d4634d3fbc22f51cce3f80674}{prev}};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00313}00313           free(hof);}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00314}00314           hof = prev;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00315}00315         \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00316}00316 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00317}00317         \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00318}00318 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00319}00319       \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00320}00320         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00321}00321     \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00322}00322   \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00323}00323 \}}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00324}00324 }
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00325}\mbox{\hyperlink{processing_8c_a22613a4ed426179d00643f6bf2d90320}{00325}} \textcolor{keywordtype}{int} \mbox{\hyperlink{processing_8c_a22613a4ed426179d00643f6bf2d90320}{run\_game}}() \{}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00326}00326   \mbox{\hyperlink{processing_8c_a2fa3f2bc2eddaa4d2bc615d24f691fe3}{request\_nickname}}();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00327}00327   \mbox{\hyperlink{processing_8c_a3778e46596dcdba8117f5a996f19dce5}{run\_menu}}();}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00328}00328   \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{\Hypertarget{processing_8c_source_l00329}00329 \}}
+
+\end{DoxyCode}

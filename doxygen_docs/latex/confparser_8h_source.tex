@@ -1,0 +1,21 @@
+\hypertarget{confparser_8h_source}{}\doxysection{confparser.\+h}
+\mbox{\hyperlink{confparser_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00001}00001 \textcolor{comment}{// Copyright 2022 <Maros Varchola -\/ mvarchdev>}}
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00002}00002 }
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00004}\mbox{\hyperlink{confparser_8h_a471b94144d3ad30225b4153eff696641}{00004}} \textcolor{preprocessor}{\#define CONFIG\_ARG\_MAX\_BYTES 128}}
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00005}00005 }
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00007}\mbox{\hyperlink{confparser_8h_aa653d7d44f2366342a950342462ffa0b}{00007}} \textcolor{keyword}{typedef} \textcolor{keyword}{struct }\mbox{\hyperlink{structconfig__option}{config\_option}} \mbox{\hyperlink{structconfig__option}{config\_option}};}
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00009}\mbox{\hyperlink{confparser_8h_a993dab671bf56da614018ed554f8a1f3}{00009}} \textcolor{keyword}{typedef} \mbox{\hyperlink{structconfig__option}{config\_option}} *\mbox{\hyperlink{confparser_8h_a993dab671bf56da614018ed554f8a1f3}{config\_option\_t}};}
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00010}00010 }
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00012}\mbox{\hyperlink{structconfig__option}{00012}} \textcolor{keyword}{struct }\mbox{\hyperlink{structconfig__option}{config\_option}} \{}
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00013}\mbox{\hyperlink{structconfig__option_af7e3030d4634d3fbc22f51cce3f80674}{00013}}   \mbox{\hyperlink{structconfig__option}{config\_option\_t}} \mbox{\hyperlink{structconfig__option_af7e3030d4634d3fbc22f51cce3f80674}{prev}};}
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00014}\mbox{\hyperlink{structconfig__option_ac3a8dd28789bb383d93aa6dd5e4861e5}{00014}}   \textcolor{keywordtype}{char} \mbox{\hyperlink{structconfig__option_ac3a8dd28789bb383d93aa6dd5e4861e5}{key}}[\mbox{\hyperlink{confparser_8h_a471b94144d3ad30225b4153eff696641}{CONFIG\_ARG\_MAX\_BYTES}}];}
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00015}\mbox{\hyperlink{structconfig__option_afee95e2756282c4d4555e21a0ef7239a}{00015}}   \textcolor{keywordtype}{char} \mbox{\hyperlink{structconfig__option_afee95e2756282c4d4555e21a0ef7239a}{value}}[\mbox{\hyperlink{confparser_8h_a471b94144d3ad30225b4153eff696641}{CONFIG\_ARG\_MAX\_BYTES}}];}
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00016}00016 \};}
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00017}00017 }
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00018}00018 \mbox{\hyperlink{structconfig__option}{config\_option\_t}} \mbox{\hyperlink{confparser_8h_afda32bfcd47ea734781a13a05ab4c33b}{read\_config\_file}}(\textcolor{keywordtype}{char} *path);}
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00019}\mbox{\hyperlink{confparser_8h_acca900bfb501826d472dcee89ab9fcea}{00019}} \textcolor{keywordtype}{int} \mbox{\hyperlink{confparser_8h_acca900bfb501826d472dcee89ab9fcea}{get\_int\_key\_value}}(\textcolor{keywordtype}{char} *filename, \textcolor{keywordtype}{char} *key);}
+\DoxyCodeLine{\Hypertarget{confparser_8h_source_l00020}\mbox{\hyperlink{confparser_8h_a30b592d20670aa1cbefd86c997837f5d}{00020}} \textcolor{keywordtype}{int} \mbox{\hyperlink{confparser_8h_a30b592d20670aa1cbefd86c997837f5d}{set\_int\_key\_value}}(\textcolor{keywordtype}{char} *tmpfile, \textcolor{keywordtype}{char} *datafile, \textcolor{keywordtype}{char} *key, \textcolor{keywordtype}{int} value);}
+
+\end{DoxyCode}
