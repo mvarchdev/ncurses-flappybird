@@ -1,0 +1,28 @@
+---
+version: "3"
+
+tasks:
+  all:
+    desc: Build game binary
+    cmds:
+      - make all
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - make clean
+
+  run:
+    desc: Build and run game
+    cmds:
+      - make run
+
+  debug:
+    desc: Debug build (symbols + no optimization)
+    cmds:
+      - make debug
+
+  release:
+    desc: Release build (optimized)
+    cmds:
+      - make release

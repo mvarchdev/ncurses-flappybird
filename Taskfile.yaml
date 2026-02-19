@@ -1,14 +1,40 @@
 ---
 version: "3"
 
-silent: false
+vars:
+  PROJECT_DIR:
+    sh: "git rev-parse --show-toplevel"
 
-env:
-
-tasks:
-### ====== INCLUDE EXTERNAL TASKFILES ====== ###
 includes:
   pre-commit:
     taskfile: .taskfiles/pre-commit.yaml
     optional: true
     aliases: [pc]
+  build:
+    taskfile: .taskfiles/build.yaml
+    optional: false
+    aliases: [b]
+  quality:
+    taskfile: .taskfiles/quality.yaml
+    optional: false
+    aliases: [q]
+
+tasks:
+  default:
+    desc: Build project in release mode
+    cmds:
+      - task: build:release
+
+  setup:
+    desc: Install local development hooks and run baseline checks
+    cmds:
+      - task: pre-commit:init
+      - task: quality:format
+      - task: build:all
+
+  ci:
+    desc: Run complete local CI equivalent
+    cmds:
+      - task: build:clean
+      - task: build:all
+      - task: quality:lint

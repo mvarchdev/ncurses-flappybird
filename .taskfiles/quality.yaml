@@ -1,0 +1,18 @@
+---
+version: "3"
+
+tasks:
+  format:
+    desc: Format C sources and headers
+    cmds:
+      - make format
+
+  lint:
+    desc: Run static analysis checks
+    cmds:
+      - make lint
+
+  pre-commit:
+    desc: Run all pre-commit hooks
+    cmds:
+      - pre-commit run --all-files

@@ -1,6 +1,6 @@
 // Copyright 2022 <Maros Varchola - mvarchdev>
 
-#include "common_tools.h"
+#include "flappybird/common_tools.h"
 
 #include <errno.h>
 #include <stdlib.h>
@@ -11,9 +11,7 @@
 /// @param min Minimum number that should return
 /// @param max Maximum number that should return
 /// @return Random number based on min max definition
-unsigned int rand_gen(int min, int max) {
-  return min + (rand() % ((max + 1) - min));
-}
+unsigned int rand_gen(int min, int max) { return min + (rand() % ((max + 1) - min)); }
 
 /// @brief Sleep for the requested number of milliseconds
 /// @param msec how long it should block
@@ -39,7 +37,7 @@ int msleep(long msec) {
 
 /// @brief Get actual time in ms
 /// @return Actual time in miliseconds
-long long timeInMilliseconds() {
+long long timeInMilliseconds(void) {
   struct timeval tv;
 
   gettimeofday(&tv, NULL);
