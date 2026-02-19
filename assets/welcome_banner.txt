@@ -1,0 +1,7 @@
+ /==============================\
+ |  BUILD STREAKS. SCORE BIG.  |
+ \==============================/
+
+ Every 5 clean pipes increase your score multiplier.
+ Open "Show statistics" in menu to track your all-time performance.
+ Sounds can be configured in assets/settings/settings.conf.

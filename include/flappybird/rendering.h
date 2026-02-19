@@ -7,6 +7,8 @@
 #include <stdint.h>
 
 #include "flappybird/confparser.h"
+#include "flappybird/game_metrics.h"
+#include "flappybird/game_stats.h"
 
 /// @brief Physics-to-render conversion coefficient (meters to characters).
 #define METERTOCHARS 0.5
@@ -27,7 +29,7 @@
 #define SETTINGS_FILE SETTINGS_FOLDER "/settings.conf"
 
 /// @brief Menu item count.
-#define MENU_ITEM_COUNT 6
+#define MENU_ITEM_COUNT 7
 
 // Backward compatibility with existing identifier used across the codebase.
 #define menu_inem_n MENU_ITEM_COUNT
@@ -120,5 +122,8 @@ void turn_off_header_color(bool switchbgfg);
 int render_about_page(int yoffset);
 bool render_hof(config_option_t hoff, int yoff, bool dofree, const char actnickname[64]);
 int render_bird_floating(level *inplvl, int degrees);
+run_metrics get_last_run_metrics(void);
+int render_stats_page(const game_stats *stats, const run_metrics *last_run, const char *nickname,
+                      int yoffset);
 
 #endif  // FLAPPYBIRD_RENDERING_H
