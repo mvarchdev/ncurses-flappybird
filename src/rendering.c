@@ -1,6 +1,6 @@
 // Copyright 2022 <Maros Varchola - mvarchdev>
 
-#include "rendering.h"
+#include "flappybird/rendering.h"
 
 #include <ctype.h>
 #include <math.h>
@@ -10,7 +10,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "common_tools.h"
+#include "flappybird/common_tools.h"
 
 /// @brief Up left border character
 #define UPLEFTBORDER '#'
@@ -142,39 +142,53 @@ void unsetcolor_bits(int fg, int bg) {
 /// @brief Returns if input colorname/string indicates intensity bit set
 /// @param colname String with colorname
 /// @return True, if it is with intensity set
-bool is_bold(char colname[]) {
-  if (!colname) return false;
+bool is_bold(const char colname[]) {
+  if (!colname)
+    return false;
 
-  for (int i = 0; i < strlen(colname); i++) colname[i] = toupper(colname[i]);
+  char tmpcol[32] = {0};
+  size_t collen = strlen(colname);
+  if (collen >= sizeof(tmpcol)) {
+    collen = sizeof(tmpcol) - 1;
+  }
+  for (size_t i = 0; i < collen; i++) {
+    tmpcol[i] = (char)toupper((unsigned char)colname[i]);
+  }
 
-  if (strstr(colname, "B_")) return true;
-
-  return false;
+  return strstr(tmpcol, "B_") != NULL;
 }
 
 /// @brief Function will match colorname to native color number
 /// @param colname String with colorname
 /// @return Native color number, -1 if not existing
-short string_to_color(char colname[]) {
-  if (!colname) return false;
+short string_to_color(const char colname[]) {
+  if (!colname)
+    return -1;
 
-  for (int i = 0; i < strlen(colname); i++) colname[i] = toupper(colname[i]);
+  char tmpcol[32] = {0};
+  size_t collen = strlen(colname);
+  if (collen >= sizeof(tmpcol)) {
+    collen = sizeof(tmpcol) - 1;
+  }
+  for (size_t i = 0; i < collen; i++) {
+    tmpcol[i] = (char)toupper((unsigned char)colname[i]);
+  }
 
-  if (strstr(colname, "BLACK"))
+  if (strstr(tmpcol, "BLACK"))
     return COLOR_BLACK;
-  else if (strstr(colname, "RED"))
+  else if (strstr(tmpcol, "RED"))
     return COLOR_RED;
-  else if (strstr(colname, "GREEN"))
+  else if (strstr(tmpcol, "GREEN"))
     return COLOR_GREEN;
-  else if (strstr(colname, "YELLOW"))
+  else if (strstr(tmpcol, "YELLOW"))
     return COLOR_YELLOW;
-  else if (strstr(colname, "BLUE"))
+  else if (strstr(tmpcol, "BLUE"))
     return COLOR_BLUE;
-  else if (strstr(colname, "MAGENTA"))
+  else if (strstr(tmpcol, "MAGENTA"))
     return COLOR_MAGENTA;
-  else if (strstr(colname, "CYAN"))
+  else if (strstr(tmpcol, "CYAN"))
     return COLOR_CYAN;
-  else if (strstr(colname, "WHITE"))
+  else if (strstr(tmpcol, "WHITE"))
     return COLOR_WHITE;
 
   return -1;
@@ -239,7 +253,8 @@ int native_to_bitscolor(short color, bool bold) {
 /// @return Background bitscolor based on input
 int native_to_bitscolor_bg(short color) {
   int bcolor = native_to_bitscolor(color, false);
-  if (bcolor > -1) return (7 & bcolor) << 4;
+  if (bcolor > -1)
+    return (7 & bcolor) << 4;
   return bcolor;
 }
 
@@ -275,7 +290,7 @@ short bits_to_native_color(int color) {
 }
 
 /// @brief Will init all uniqe colorpairs
-void init_colorpairs() {
+void init_colorpairs(void) {
   int fg, bg;
   int colorpair;
 
@@ -288,7 +303,7 @@ void init_colorpairs() {
 
 /// @brief Will initialize screen and compute base offsets and sizes
 /// @return Error code
-int init_screen() {
+int init_screen(void) {
   load_settings();
   initscr();
   curs_set(0);
@@ -307,8 +322,8 @@ int init_screen() {
 
   headersizex = MAPSIZEX - 2 * act_screen.header_padding;
 
-  act_screen.header_width = xsize - (OUTERMARGIN * 2) - (BORDERWIDTH * 2) -
-                            (act_screen.header_padding * 2);
+  act_screen.header_width =
+      xsize - (OUTERMARGIN * 2) - (BORDERWIDTH * 2) - (act_screen.header_padding * 2);
 
   resizeterm(ysize, xsize);
   render_borders();
@@ -320,7 +335,8 @@ int init_screen() {
 /// @brief Change speed of bird based jump speed
 /// @param inpb Bird struct pointer to use
 void jump_bird(bird *inpb) {
-  if (!inpb) return;
+  if (!inpb)
+    return;
 
   if (inpb->act_speed < 0) {
     if ((inpb->act_speed - inpb->jump_speed) < -1.5 * inpb->jump_speed)
@@ -338,14 +354,14 @@ void jump_bird(bird *inpb) {
 /// @param inpb Bird struct pointer
 /// @return Error code
 int print_game_details(int actlives, int score, level *inplvl, bird *inpb) {
-  if (!inplvl || !inpb) return -1;
+  if (!inplvl || !inpb)
+    return -1;
 
   int i = 0;
   char headerinp[7][MAXHEADERSTRING] = {0};
   sprintf(headerinp[i++], "Level name: %s", inplvl->levelname);
   sprintf(headerinp[i++], "Score: %d", score);
-  sprintf(headerinp[i++], "Lives [Actual / Max]: %d / %d", actlives,
-          inplvl->max_lives);
+  sprintf(headerinp[i++], "Lives [Actual / Max]: %d / %d", actlives, inplvl->max_lives);
   sprintf(headerinp[i++], "Speed: %.3f [char/s]", act_speed_chars);
   sprintf(headerinp[i++], "Bird speed: %.3f [char/s]", inpb->act_speed);
   i++;
@@ -355,10 +371,9 @@ int print_game_details(int actlives, int score, level *inplvl, bird *inpb) {
 
 /// @brief Game paused dialog
 /// @return Error code
-int game_paused_dialog() {
+int game_paused_dialog(void) {
   char headerinp[1][60] = {0};
-  sprintf(headerinp[0],
-          "GAME PAUSED - PRESS 'p' TO CONTINUE OR 'e' TO END GAME");
+  sprintf(headerinp[0], "GAME PAUSED - PRESS 'p' TO CONTINUE OR 'e' TO END GAME");
   render_header_text(1, 60, headerinp);
   timeout(-1);
   while (true) {
@@ -376,7 +391,8 @@ int game_paused_dialog() {
 /// @param timems Time to set in ms
 void update_last_ms_pipes(long long timems) {
   for (int i = 0; i < MAX_PIPES; i++) {
-    if (!pipe_array[i].enabled) continue;
+    if (!pipe_array[i].enabled)
+      continue;
     pipe_array[i].last_time_moved = timems;
   }
 }
@@ -393,8 +409,7 @@ int colision_dialog(int actlives, int score) {
           actlives);
   sprintf(headerinp[1], "YOUR ACTUAL SCORE IS: %d", score);
 
-  sprintf(headerinp[3],
-          "Do you want to try again (press 't') or end the game (press 'e') ?");
+  sprintf(headerinp[3], "Do you want to try again (press 't') or end the game (press 'e') ?");
   render_header_text(4, 90, headerinp);
   timeout(-1);
   while (true) {
@@ -409,9 +424,10 @@ int colision_dialog(int actlives, int score) {
 }
 
 /// @brief Will disable all enabled pipes
-void clear_all_pipes() {
+void clear_all_pipes(void) {
   for (int i = 0; i < MAX_PIPES; i++)
-    if (pipe_array[i].enabled) pipe_array[i].enabled = false;
+    if (pipe_array[i].enabled)
+      pipe_array[i].enabled = false;
 }
 
 /// @brief Function to run level
@@ -419,13 +435,15 @@ void clear_all_pipes() {
 /// @param status Pointer to status output
 /// @return Score
 int run_level(level *inplvl, int *status) {
-  if (!inplvl) return -1;
+  if (!inplvl)
+    return -1;
 
   int actlives = inplvl->max_lives, score = 0;
   act_speed_chars = inplvl->start_speed * METERTOCHARS;
   int statustmp = 0;
   bird usebird;
-  if (!status) status = &statustmp;
+  if (!status)
+    status = &statustmp;
 
   while (actlives != 0) {
     clear_all_pipes();
@@ -457,8 +475,7 @@ int run_level(level *inplvl, int *status) {
       move_bird(&usebird);
       clear_map_area(inplvl, true);
       render_pipes(inplvl);
-      if (bird_collision(&usebird, BIRDOFFX) ||
-          usebird.act_position >= MAPSIZEY - 1)
+      if (bird_collision(&usebird, BIRDOFFX) || usebird.act_position >= MAPSIZEY - 1)
         break;
 
       render_bird(&usebird, BIRDOFFX, false);
@@ -472,7 +489,8 @@ int run_level(level *inplvl, int *status) {
 
       // usleep(1000);
     }
-    if (*status == 1) break;
+    if (*status == 1)
+      break;
     actlives--;
     render_bird(&usebird, BIRDOFFX, true);
     if (actlives > 0)
@@ -489,15 +507,13 @@ int run_level(level *inplvl, int *status) {
 
 /// @brief Will render all borders
 /// @return Error code
-int render_borders() {
-  setcolor_bits(act_screen.border_color,
-                bitscolor_bg_to_fg(act_screen.border_color));
+int render_borders(void) {
+  setcolor_bits(act_screen.border_color, bitscolor_bg_to_fg(act_screen.border_color));
   for (int i = 0; i < BORDERWIDTH; i++) {
     mvaddch(OUTERMARGIN + i, OUTERMARGIN + i, UPLEFTBORDER);
     mvaddch(OUTERMARGIN + i, xsize - OUTERMARGIN - 1 - i, UPRIGHTBORDER);
     mvaddch(ysize - OUTERMARGIN - 1 - i, OUTERMARGIN + i, DOWNLEFTBORDER);
-    mvaddch(ysize - OUTERMARGIN - 1 - i, xsize - OUTERMARGIN - 1 - i,
-            DOWNRIGHTBORDER);
+    mvaddch(ysize - OUTERMARGIN - 1 - i, xsize - OUTERMARGIN - 1 - i, DOWNRIGHTBORDER);
 
     for (int z = OUTERMARGIN + i + 1; z < xsize - OUTERMARGIN - i - 1; z++) {
       mvaddch(OUTERMARGIN + i, z, VERTBORDER);
@@ -518,8 +534,7 @@ int render_borders() {
       }
     }
   }
-  unsetcolor_bits(act_screen.border_color,
-                  bitscolor_bg_to_fg(act_screen.border_color));
+  unsetcolor_bits(act_screen.border_color, bitscolor_bg_to_fg(act_screen.border_color));
   return 0;
 }
 
@@ -528,17 +543,14 @@ int render_borders() {
 /// @param maxstring String length of one line in header_text
 /// @param header_text 2D Array of chars (More string lines)
 /// @return Error code
-int render_header_text(int lines, int maxstring,
-                       char header_text[lines][maxstring]) {
-  setcolor_bits(act_screen.header_color,
-                bitscolor_bg_to_fg(act_screen.header_color));
+int render_header_text(int lines, int maxstring, char header_text[lines][maxstring]) {
+  setcolor_bits(act_screen.header_color, bitscolor_bg_to_fg(act_screen.header_color));
   clear_header(true);
 
   int yoff = 0;
   for (int i = 0; i < lines && i < act_screen.header_height; i++)
     yoff += render_header_string(header_text[i], yoff, false, false);
-  unsetcolor_bits(act_screen.header_color,
-                  bitscolor_bg_to_fg(act_screen.header_color));
+  unsetcolor_bits(act_screen.header_color, bitscolor_bg_to_fg(act_screen.header_color));
   return 0;
 }
 
@@ -546,22 +558,18 @@ int render_header_text(int lines, int maxstring,
 /// @param switchbgfg Switch fg to bg and viceversa
 void turn_on_header_color(bool switchbgfg) {
   if (switchbgfg)
-    setcolor_bits(bitscolor_bg_to_fg(act_screen.header_color),
-                  act_screen.header_color);
+    setcolor_bits(bitscolor_bg_to_fg(act_screen.header_color), act_screen.header_color);
   else
-    setcolor_bits(act_screen.header_color,
-                  bitscolor_bg_to_fg(act_screen.header_color));
+    setcolor_bits(act_screen.header_color, bitscolor_bg_to_fg(act_screen.header_color));
 }
 
 /// @brief Will set header color off
 /// @param switchbgfg Switch fg to bg and viceversa
 void turn_off_header_color(bool switchbgfg) {
   if (switchbgfg)
-    unsetcolor_bits(bitscolor_bg_to_fg(act_screen.header_color),
-                    act_screen.header_color);
+    unsetcolor_bits(bitscolor_bg_to_fg(act_screen.header_color), act_screen.header_color);
   else
-    unsetcolor_bits(act_screen.header_color,
-                    bitscolor_bg_to_fg(act_screen.header_color));
+    unsetcolor_bits(act_screen.header_color, bitscolor_bg_to_fg(act_screen.header_color));
 }
 
 /// @brief Prints string and computes lines based on header width
@@ -570,18 +578,21 @@ void turn_off_header_color(bool switchbgfg) {
 /// @param setcolor If true, it will set color based on the settings
 /// @param cl_hdr If true, it will clear header before print out
 /// @return How many lines this function have printed out
-int render_header_string(char header_text[], int yoff, bool setcolor,
-                         bool cl_hdr) {
-  if (yoff == -1) yoff = act_screen.header_height / 2;
+int render_header_string(const char *header_text, int yoff, bool setcolor, bool cl_hdr) {
+  if (header_text == NULL)
+    return -1;
+
+  if (yoff == -1)
+    yoff = act_screen.header_height / 2;
 
   if (setcolor)
-    setcolor_bits(act_screen.header_color,
-                  bitscolor_bg_to_fg(act_screen.header_color));
+    setcolor_bits(act_screen.header_color, bitscolor_bg_to_fg(act_screen.header_color));
 
-  if (cl_hdr) clear_header(true);
+  if (cl_hdr)
+    clear_header(true);
 
   int parts = 1;
-  if (strlen(header_text) > headersizex)
+  if (strlen(header_text) > (size_t)headersizex)
     parts += strlen(header_text) / headersizex;
 
   int i = 0;
@@ -589,8 +600,7 @@ int render_header_string(char header_text[], int yoff, bool setcolor,
     mvprintw(headeroffsy + yoff + i, headeroffsx, "%.*s", headersizex,
              (headersizex * i) + header_text);
   if (setcolor)
-    unsetcolor_bits(act_screen.header_color,
-                    bitscolor_bg_to_fg(act_screen.header_color));
+    unsetcolor_bits(act_screen.header_color, bitscolor_bg_to_fg(act_screen.header_color));
   return i;
 }
 
@@ -602,17 +612,16 @@ int clear_map_area(level *inplvl, bool full) {
   int bgoppcolor = 0;
   if (inplvl) {
     bgoppcolor = native_to_bitscolor(
-        opposit_col(bits_to_native_color(bitscolor_bg_to_fg(inplvl->bgcolor))),
-        true);
+        opposit_col(bits_to_native_color(bitscolor_bg_to_fg(inplvl->bgcolor))), true);
     setcolor_bits(bgoppcolor, bitscolor_bg_to_fg(inplvl->bgcolor));
   }
 
   for (int y = 0; y < MAPSIZEY + (full ? MAPMARGIN * 2 : 0); y++)
     for (int x = 0; x < MAPSIZEX + (full ? MAPMARGIN * 2 : 0); x++)
-      mvaddch(y + mapoffsy - (full ? MAPMARGIN : 0),
-              x + mapoffsx - (full ? MAPMARGIN : 0), ' ');
+      mvaddch(y + mapoffsy - (full ? MAPMARGIN : 0), x + mapoffsx - (full ? MAPMARGIN : 0), ' ');
 
-  if (inplvl) unsetcolor_bits(bgoppcolor, bitscolor_bg_to_fg(inplvl->bgcolor));
+  if (inplvl)
+    unsetcolor_bits(bgoppcolor, bitscolor_bg_to_fg(inplvl->bgcolor));
 
   return 0;
 }
@@ -621,12 +630,8 @@ int clear_map_area(level *inplvl, bool full) {
 /// @param full If true, will clear also padding area
 /// @return Error code
 int clear_header(bool full) {
-  for (int y = 0; y < act_screen.header_height +
-                          (full ? act_screen.header_padding * 2 : 0);
-       y++)
-    for (int x = 0; x < act_screen.header_width +
-                            (full ? act_screen.header_padding * 2 : 0);
-         x++)
+  for (int y = 0; y < act_screen.header_height + (full ? act_screen.header_padding * 2 : 0); y++)
+    for (int x = 0; x < act_screen.header_width + (full ? act_screen.header_padding * 2 : 0); x++)
       mvaddch(y + headeroffsy - (full ? act_screen.header_padding : 0),
               x + headeroffsx - (full ? act_screen.header_padding : 0), ' ');
   return 0;
@@ -636,10 +641,11 @@ int clear_header(bool full) {
 /// @param option_selected Which option shoud be highlighted
 /// @param nickname Nickname to be shown
 /// @return Error code
-int render_menu(int option_selected, char nickname[]) {
+int render_menu(int option_selected, const char nickname[]) {
   int err = print_header_options(menu_inem_n, 30, menu_items, option_selected,
                                  (act_screen.header_height - 1) / 2);
-  if (err != 0) return err;
+  if (err != 0)
+    return err;
   char namestr[120] = {0};
   sprintf(namestr, "Welcome, %s!", nickname);
   return render_header_string(namestr, 0, true, false);
@@ -652,9 +658,8 @@ int render_about_page(int yoffset) {
   char aboutinfo[10][100] = {0};
 
   int lineidx = 0;
-  sprintf(
-      aboutinfo[lineidx++],
-      "Welcome to this game named Flappy Bird - created in ncurses framework!");
+  sprintf(aboutinfo[lineidx++],
+          "Welcome to this game named Flappy Bird - created in ncurses framework!");
   sprintf(aboutinfo[lineidx++],
           "This game was created by Maros Varchola as school project, but now, "
           "as you can see.");
@@ -663,22 +668,18 @@ int render_about_page(int yoffset) {
   sprintf(aboutinfo[lineidx++],
           "If you have any ideas on how to improve this game, do not be shy "
           "and try a PR.");
-  sprintf(aboutinfo[lineidx++],
-          "I believe it will be very interesting change/feature!");
+  sprintf(aboutinfo[lineidx++], "I believe it will be very interesting change/feature!");
 
   sprintf(aboutinfo[lineidx++],
           "In this game, the real physics calculations are used, so even "
           "gravity constant is set here!");
 
-  sprintf(aboutinfo[lineidx++],
-          "If you have any questions, write me on marosvarchola@sunray.sk !");
+  sprintf(aboutinfo[lineidx++], "If you have any questions, write me on marosvarchola@sunray.sk !");
   lineidx++;
   sprintf(aboutinfo[lineidx++], "ENJOY THE GAME!");
 
   int bgoppcolor = native_to_bitscolor(
-      opposit_col(
-          bits_to_native_color(bitscolor_bg_to_fg(act_screen.header_color))),
-      true);
+      opposit_col(bits_to_native_color(bitscolor_bg_to_fg(act_screen.header_color))), true);
   setcolor_bits(bgoppcolor, bitscolor_bg_to_fg(act_screen.header_color));
   clear_map_area(NULL, true);
 
@@ -688,12 +689,12 @@ int render_about_page(int yoffset) {
     lineidxcounter++;
   }
   if (i >= MAPSIZEY - 1 && lineidxcounter < lineidx)
-    mvprintw(mapoffsy + i - 1, mapoffsx,
-             "There is more! Scroll down! (arrows up/down)");
+    mvprintw(mapoffsy + i - 1, mapoffsx, "There is more! Scroll down! (arrows up/down)");
 
   unsetcolor_bits(bgoppcolor, bitscolor_bg_to_fg(act_screen.header_color));
 
-  if (i >= MAPSIZEY - 1 && lineidxcounter < lineidx) return i - MAPSIZEY;
+  if (i >= MAPSIZEY - 1 && lineidxcounter < lineidx)
+    return i - MAPSIZEY;
 
   return 0;
 }
@@ -707,22 +708,22 @@ int render_about_page(int yoffset) {
 fbpipe get_pipe(int x, level *inplvl, bool enable, int prevupheight) {
   fbpipe newpipe = {0};
 
-  if (!inplvl) return newpipe;
+  if (!inplvl)
+    return newpipe;
 
   newpipe.pipewidth = rand_gen(inplvl->minimum_width, inplvl->maximum_width);
 
   int holeheight = rand_gen(inplvl->minimum_space, inplvl->maximum_space);
-  int full_allowed_height =
-      MAPSIZEY - ((PIPEHOLE_END_HEIGHT + 1) * 2) - holeheight;
+  int full_allowed_height = MAPSIZEY - ((PIPEHOLE_END_HEIGHT + 1) * 2) - holeheight;
 
   int minheight = 1, maxheight = full_allowed_height - 1;
 
   if (prevupheight > 0) {
     int useinterval = rand_gen(0, 1);
     if (useinterval == 0) {
-      if (prevupheight - inplvl->maximum_distance_space <= 0) useinterval = 1;
-    } else if (prevupheight + inplvl->minimum_distance_space >=
-               full_allowed_height - 1)
+      if (prevupheight - inplvl->maximum_distance_space <= 0)
+        useinterval = 1;
+    } else if (prevupheight + inplvl->minimum_distance_space >= full_allowed_height - 1)
       useinterval = 0;
 
     if (useinterval == 0) {
@@ -765,7 +766,8 @@ fbpipe get_pipe(int x, level *inplvl, bool enable, int prevupheight) {
 /// @param x x coordinate
 /// @return True if cordinates are in map area, else false
 bool check_in_map_ok(int y, int x) {
-  if (y < 0 || y >= MAPSIZEY || x < 0 || x >= MAPSIZEX) return false;
+  if (y < 0 || y >= MAPSIZEY || x < 0 || x >= MAPSIZEX)
+    return false;
   return true;
 }
 
@@ -775,7 +777,8 @@ bool check_in_map_ok(int y, int x) {
 /// @param inp Character to add
 /// @return Error code
 int addch_maparea(int y, int x, const chtype inp) {
-  if (check_in_map_ok(y, x)) return mvaddch(mapoffsy + y, mapoffsx + x, inp);
+  if (check_in_map_ok(y, x))
+    return mvaddch(mapoffsy + y, mapoffsx + x, inp);
 
   return 0;
 }
@@ -787,12 +790,11 @@ int addch_maparea(int y, int x, const chtype inp) {
 /// @param inplvl level struct pointer to use
 /// @return Error code
 int addch_pipe_border(int y, int x, const chtype inp, level *inplvl) {
-  if (!inplvl) return -1;
+  if (!inplvl)
+    return -1;
 
-  unsetcolor_bits(inplvl->pipe_color_body,
-                  bitscolor_bg_to_fg(inplvl->pipe_color_body));
-  setcolor_bits(inplvl->pipe_color_brd,
-                bitscolor_bg_to_fg(inplvl->pipe_color_brd));
+  unsetcolor_bits(inplvl->pipe_color_body, bitscolor_bg_to_fg(inplvl->pipe_color_body));
+  setcolor_bits(inplvl->pipe_color_brd, bitscolor_bg_to_fg(inplvl->pipe_color_brd));
   return addch_maparea(y, x, inp);
 }
 
@@ -803,12 +805,11 @@ int addch_pipe_border(int y, int x, const chtype inp, level *inplvl) {
 /// @param inplvl level struct pointer to use
 /// @return Error code
 int addch_pipe_body(int y, int x, const chtype inp, level *inplvl) {
-  if (!inplvl) return -1;
+  if (!inplvl)
+    return -1;
 
-  unsetcolor_bits(inplvl->pipe_color_brd,
-                  bitscolor_bg_to_fg(inplvl->pipe_color_brd));
-  setcolor_bits(inplvl->pipe_color_body,
-                bitscolor_bg_to_fg(inplvl->pipe_color_body));
+  unsetcolor_bits(inplvl->pipe_color_brd, bitscolor_bg_to_fg(inplvl->pipe_color_brd));
+  setcolor_bits(inplvl->pipe_color_body, bitscolor_bg_to_fg(inplvl->pipe_color_body));
   return addch_maparea(y, x, inp);
 }
 
@@ -819,8 +820,7 @@ int addch_pipe_body(int y, int x, const chtype inp, level *inplvl) {
 /// @param inpch Character to add
 /// @param inpb Bird struct to use
 /// @param showcol If true, then collision will be checked and printed
-void render_bird_collision(int y, int x, chtype inpch, bird *inpb,
-                           bool showcol) {
+void render_bird_collision(int y, int x, chtype inpch, bird *inpb, bool showcol) {
   if (!showcol) {
     mvaddch(y, x, inpch);
     return;
@@ -853,8 +853,7 @@ int render_bird(bird *inpb, int xpos, bool show_collision) {
     render_bird_collision(ycenter, xcenter + 3, '|', inpb, show_collision);
     render_bird_collision(ycenter, xcenter + 2, '*', inpb, show_collision);
     for (size_t i = 0; i < 3; i++)
-      render_bird_collision(ycenter, xcenter - 1 + i, '#', inpb,
-                            show_collision);
+      render_bird_collision(ycenter, xcenter - 1 + i, '#', inpb, show_collision);
   }
   if (ycenter + 1 >= mapoffsy && ycenter + 1 < (mapoffsy + MAPSIZEY))
     render_bird_collision(ycenter + 1, xcenter, '/', inpb, show_collision);
@@ -867,7 +866,8 @@ int render_bird(bird *inpb, int xpos, bool show_collision) {
 /// @param bird Bird structure pointer to use
 /// @return Error code
 int move_bird(bird *bird) {
-  if (!bird) return -1;
+  if (!bird)
+    return -1;
 
   if (bird->last_time_ms == 0) {
     bird->last_time_ms = timeInMilliseconds();
@@ -877,8 +877,7 @@ int move_bird(bird *bird) {
   long long act_time = timeInMilliseconds();
   long long diff_time = act_time - bird->last_time_ms;
   float seconds = ((float)diff_time / 1000);
-  float next_pos =
-      bird->act_position + (bird->act_speed * METERTOCHARS) * seconds;
+  float next_pos = bird->act_position + (bird->act_speed * METERTOCHARS) * seconds;
   if (next_pos >= MAPSIZEY) {
     bird->last_time_ms = act_time;
     bird->act_speed = 0;
@@ -903,97 +902,82 @@ int move_bird(bird *bird) {
 /// @param inplvl Level struct pointer
 /// @return Error code
 int render_pipe(fbpipe *inputp, level *inplvl) {
-  if (!inputp || !inplvl) return -1;
+  if (!inputp || !inplvl)
+    return -1;
 
-  if (inputp->position - 2 >= MAPSIZEX) return -1;
+  if (inputp->position - 2 >= MAPSIZEX)
+    return -1;
 
   // RENDER UPPER PIPE
   for (int y = 0; y < inputp->upheight && inputp->position < MAPSIZEX; y++) {
     addch_pipe_border(y, inputp->position, PIPEHORI, inplvl);
-    for (int x = 0;
-         x < inputp->pipewidth && inputp->position + x + 1 < MAPSIZEX; x++)
+    for (int x = 0; x < inputp->pipewidth && inputp->position + x + 1 < MAPSIZEX; x++)
       addch_pipe_body(y, inputp->position + x + 1, PIPEBODY, inplvl);
     if ((inputp->position + inputp->pipewidth + 1) < MAPSIZEX)
-      addch_pipe_border(y, inputp->position + inputp->pipewidth + 1, PIPEHORI,
-                        inplvl);
+      addch_pipe_border(y, inputp->position + inputp->pipewidth + 1, PIPEHORI, inplvl);
   }
 
   // first layer turn border
-  for (int i = 0; i < PIPEHOLE_END_WIDTH &&
-                  (inputp->position - PIPEHOLE_END_WIDTH + i) < MAPSIZEX;
+  for (int i = 0; i < PIPEHOLE_END_WIDTH && (inputp->position - PIPEHOLE_END_WIDTH + i) < MAPSIZEX;
        i++)
-    addch_pipe_border(inputp->upheight - 1,
-                      inputp->position - PIPEHOLE_END_WIDTH + i, PIPEVERT,
+    addch_pipe_border(inputp->upheight - 1, inputp->position - PIPEHOLE_END_WIDTH + i, PIPEVERT,
                       inplvl);
-  for (int i = 0; i < PIPEHOLE_END_WIDTH &&
-                  (inputp->position + 1 + inputp->pipewidth + 1 + i) < MAPSIZEX;
-       i++)
-    addch_pipe_border(inputp->upheight - 1,
-                      inputp->position + 1 + inputp->pipewidth + 1 + i,
+  for (int i = 0;
+       i < PIPEHOLE_END_WIDTH && (inputp->position + 1 + inputp->pipewidth + 1 + i) < MAPSIZEX; i++)
+    addch_pipe_border(inputp->upheight - 1, inputp->position + 1 + inputp->pipewidth + 1 + i,
                       PIPEVERT, inplvl);
 
   // second layer turn border and body
-  for (int i = 0; i < inputp->pipewidth + 2 + PIPEHOLE_END_WIDTH * 2 &&
-                  (inputp->position - 2 + i) < MAPSIZEX;
+  for (int i = 0;
+       i < inputp->pipewidth + 2 + PIPEHOLE_END_WIDTH * 2 && (inputp->position - 2 + i) < MAPSIZEX;
        i++) {
     if (i == 0 || i == inputp->pipewidth + 1 + PIPEHOLE_END_WIDTH * 2)
-      addch_pipe_border(inputp->upheight, inputp->position - 2 + i, PIPEHORI,
-                        inplvl);
+      addch_pipe_border(inputp->upheight, inputp->position - 2 + i, PIPEHORI, inplvl);
     else
-      addch_pipe_body(inputp->upheight, inputp->position - 2 + i, PIPEBODY,
-                      inplvl);
+      addch_pipe_body(inputp->upheight, inputp->position - 2 + i, PIPEBODY, inplvl);
 
     // third/last layer turn border
-    addch_pipe_border(inputp->upheight + 1, inputp->position - 2 + i, PIPEEND,
-                      inplvl);
+    addch_pipe_border(inputp->upheight + 1, inputp->position - 2 + i, PIPEEND, inplvl);
   }
 
   // RENDER DOWN PIPE
   for (int y = 0; y < inputp->downheight && inputp->position < MAPSIZEX; y++) {
     addch_pipe_border(MAPSIZEY - 1 - y, inputp->position, PIPEHORI, inplvl);
-    for (int x = 0;
-         x < inputp->pipewidth && inputp->position + x + 1 < MAPSIZEX; x++)
-      addch_pipe_body(MAPSIZEY - 1 - y, inputp->position + x + 1, PIPEBODY,
-                      inplvl);
+    for (int x = 0; x < inputp->pipewidth && inputp->position + x + 1 < MAPSIZEX; x++)
+      addch_pipe_body(MAPSIZEY - 1 - y, inputp->position + x + 1, PIPEBODY, inplvl);
     if ((inputp->position + inputp->pipewidth + 1) < MAPSIZEX)
-      addch_pipe_border(MAPSIZEY - 1 - y,
-                        inputp->position + inputp->pipewidth + 1, PIPEHORI,
+      addch_pipe_border(MAPSIZEY - 1 - y, inputp->position + inputp->pipewidth + 1, PIPEHORI,
                         inplvl);
   }
 
   // first layer turn border
-  for (int i = 0; i < PIPEHOLE_END_WIDTH &&
-                  (inputp->position - PIPEHOLE_END_WIDTH + i) < MAPSIZEX;
+  for (int i = 0; i < PIPEHOLE_END_WIDTH && (inputp->position - PIPEHOLE_END_WIDTH + i) < MAPSIZEX;
        i++)
     addch_pipe_border(MAPSIZEY - 1 - inputp->downheight + 1,
                       inputp->position - PIPEHOLE_END_WIDTH + i, '-', inplvl);
-  for (int i = 0; i < PIPEHOLE_END_WIDTH &&
-                  (inputp->position + 1 + inputp->pipewidth + 1 + i) < MAPSIZEX;
-       i++)
+  for (int i = 0;
+       i < PIPEHOLE_END_WIDTH && (inputp->position + 1 + inputp->pipewidth + 1 + i) < MAPSIZEX; i++)
     addch_pipe_border(MAPSIZEY - 1 - inputp->downheight + 1,
-                      inputp->position + 1 + inputp->pipewidth + 1 + i, '-',
-                      inplvl);
+                      inputp->position + 1 + inputp->pipewidth + 1 + i, '-', inplvl);
 
   // second layer turn border and body
-  for (int i = 0; i < inputp->pipewidth + 2 + PIPEHOLE_END_WIDTH * 2 &&
-                  (inputp->position - 2 + i) < MAPSIZEX;
+  for (int i = 0;
+       i < inputp->pipewidth + 2 + PIPEHOLE_END_WIDTH * 2 && (inputp->position - 2 + i) < MAPSIZEX;
        i++) {
     if (i == 0 || i == inputp->pipewidth + 1 + PIPEHOLE_END_WIDTH * 2)
-      addch_pipe_border(MAPSIZEY - 1 - inputp->downheight,
-                        inputp->position - 2 + i, PIPEHORI, inplvl);
+      addch_pipe_border(MAPSIZEY - 1 - inputp->downheight, inputp->position - 2 + i, PIPEHORI,
+                        inplvl);
     else
-      addch_pipe_body(MAPSIZEY - 1 - inputp->downheight,
-                      inputp->position - 2 + i, PIPEBODY, inplvl);
+      addch_pipe_body(MAPSIZEY - 1 - inputp->downheight, inputp->position - 2 + i, PIPEBODY,
+                      inplvl);
 
     // third/last layer turn border
-    addch_pipe_border(MAPSIZEY - 1 - inputp->downheight - 1,
-                      inputp->position - 2 + i, PIPEEND, inplvl);
+    addch_pipe_border(MAPSIZEY - 1 - inputp->downheight - 1, inputp->position - 2 + i, PIPEEND,
+                      inplvl);
   }
 
-  unsetcolor_bits(inplvl->pipe_color_brd,
-                  bitscolor_bg_to_fg(inplvl->pipe_color_brd));
-  unsetcolor_bits(inplvl->pipe_color_body,
-                  bitscolor_bg_to_fg(inplvl->pipe_color_body));
+  unsetcolor_bits(inplvl->pipe_color_brd, bitscolor_bg_to_fg(inplvl->pipe_color_brd));
+  unsetcolor_bits(inplvl->pipe_color_body, bitscolor_bg_to_fg(inplvl->pipe_color_body));
 
   return 0;
 }
@@ -1002,10 +986,12 @@ int render_pipe(fbpipe *inputp, level *inplvl) {
 /// @param inplvl Pointer to input level
 /// @return Errcode
 int render_pipes(level *inplvl) {
-  if (!inplvl) return -1;
+  if (!inplvl)
+    return -1;
 
   for (int i = 0; i < MAX_PIPES; i++)
-    if (pipe_array[i].enabled) render_pipe(&pipe_array[i], inplvl);
+    if (pipe_array[i].enabled)
+      render_pipe(&pipe_array[i], inplvl);
 
   return 0;
 }
@@ -1015,11 +1001,9 @@ int render_pipes(level *inplvl) {
 /// @return Error code
 int print_level_options(int option_selected) {
   char level_options[6][30] = {
-      "Play level", "Scroll down",    "Scroll up",
-      "Next level", "Previous level", "Back",
+      "Play level", "Scroll down", "Scroll up", "Next level", "Previous level", "Back",
   };
-  return print_header_options(6, 30, level_options, option_selected,
-                              act_screen.header_height - 1);
+  return print_header_options(6, 30, level_options, option_selected, act_screen.header_height - 1);
 }
 
 /// @brief Common function to print header options
@@ -1030,35 +1014,31 @@ int print_level_options(int option_selected) {
 /// @param ypos Y position in header
 /// @return
 int print_header_options(int option_items_n, int maxstrlen,
-                         char option_items[option_items_n][maxstrlen],
-                         int option_selected, int ypos) {
-  setcolor_bits(act_screen.header_color,
-                bitscolor_bg_to_fg(act_screen.header_color));
+                         char option_items[option_items_n][maxstrlen], int option_selected,
+                         int ypos) {
+  setcolor_bits(act_screen.header_color, bitscolor_bg_to_fg(act_screen.header_color));
   clear_header(true);
 
   int actx = headeroffsx;
   int acty = headeroffsy + ypos;
   for (int i = 0; i < option_items_n; i++) {
     if (option_selected == i)
-      setcolor_bits(bitscolor_bg_to_fg(act_screen.header_color),
-                    act_screen.header_color);
+      setcolor_bits(bitscolor_bg_to_fg(act_screen.header_color), act_screen.header_color);
 
     mvprintw(acty, actx, option_items[i]);
     actx += strlen(option_items[i]) + 1;
 
     if (option_selected == i) {
-      unsetcolor_bits(bitscolor_bg_to_fg(act_screen.header_color),
-                      act_screen.header_color);
-      setcolor_bits(act_screen.header_color,
-                    bitscolor_bg_to_fg(act_screen.header_color));
+      unsetcolor_bits(bitscolor_bg_to_fg(act_screen.header_color), act_screen.header_color);
+      setcolor_bits(act_screen.header_color, bitscolor_bg_to_fg(act_screen.header_color));
     }
 
-    if (i + 1 != option_items_n) mvprintw(acty, actx, "|");
+    if (i + 1 != option_items_n)
+      mvprintw(acty, actx, "|");
     actx += 2;
   }
 
-  unsetcolor_bits(act_screen.header_color,
-                  bitscolor_bg_to_fg(act_screen.header_color));
+  unsetcolor_bits(act_screen.header_color, bitscolor_bg_to_fg(act_screen.header_color));
   return 0;
 }
 
@@ -1067,7 +1047,8 @@ int print_header_options(int option_items_n, int maxstrlen,
 /// @param yoffset Actual scroll
 /// @return Error code
 int print_level_info(level *inplvl, int yoffset) {
-  if (!inplvl) return -1;
+  if (!inplvl)
+    return -1;
 
   char lvlinfo[30][64] = {0};
 
@@ -1080,11 +1061,9 @@ int print_level_info(level *inplvl, int yoffset) {
   sprintf(lvlinfo[lineidx++], "Start speed: %.3f [m/s]", inplvl->start_speed);
 
   if (inplvl->speed_increase > 0)
-    sprintf(lvlinfo[lineidx++], "Speed increase: %.3f [m/s per minute]",
-            inplvl->start_speed);
+    sprintf(lvlinfo[lineidx++], "Speed increase: %.3f [m/s per minute]", inplvl->start_speed);
   else
-    sprintf(lvlinfo[lineidx++],
-            "Speed increase: %.3f [m/s per minute] (DEFAULT)", def_speed_incr);
+    sprintf(lvlinfo[lineidx++], "Speed increase: %.3f [m/s per minute] (DEFAULT)", def_speed_incr);
 
   sprintf(lvlinfo[lineidx++], "Minimum space between pipes: %d [characters]",
           inplvl->minimum_space);
@@ -1098,30 +1077,24 @@ int print_level_info(level *inplvl, int yoffset) {
           inplvl->minimum_distance);
   sprintf(lvlinfo[lineidx++], "Maximum distance between pipes: %d [characters]",
           inplvl->maximum_distance);
-  sprintf(lvlinfo[lineidx++],
-          "Minimum distance between pipe spaces: %d [characters]",
+  sprintf(lvlinfo[lineidx++], "Minimum distance between pipe spaces: %d [characters]",
           inplvl->minimum_distance_space);
-  sprintf(lvlinfo[lineidx++],
-          "Maximum distance between pipe spaces: %d [characters]",
+  sprintf(lvlinfo[lineidx++], "Maximum distance between pipe spaces: %d [characters]",
           inplvl->maximum_distance_space);
 
   if (inplvl->gravity_multiply > 0)
-    sprintf(lvlinfo[lineidx++], "Gravity multiplier: %.3f",
-            inplvl->gravity_multiply);
+    sprintf(lvlinfo[lineidx++], "Gravity multiplier: %.3f", inplvl->gravity_multiply);
   else {
     inplvl->gravity_multiply = def_grav_multiply;
-    sprintf(lvlinfo[lineidx++], "Gravity multiplier: %.3f (DEFAULT)",
-            def_grav_multiply);
+    sprintf(lvlinfo[lineidx++], "Gravity multiplier: %.3f (DEFAULT)", def_grav_multiply);
   }
 
-  sprintf(lvlinfo[lineidx++], "Gravity %.3f [m/s^2]",
-          gravity_constant * inplvl->gravity_multiply);
+  sprintf(lvlinfo[lineidx++], "Gravity %.3f [m/s^2]", gravity_constant * inplvl->gravity_multiply);
   sprintf(lvlinfo[lineidx++], "Jump speed: %.3f [m/s]", inplvl->jump_speed);
   sprintf(lvlinfo[lineidx++], "Max lives: %d", inplvl->max_lives);
 
   int bgoppcolor = native_to_bitscolor(
-      opposit_col(bits_to_native_color(bitscolor_bg_to_fg(inplvl->bgcolor))),
-      true);
+      opposit_col(bits_to_native_color(bitscolor_bg_to_fg(inplvl->bgcolor))), true);
   setcolor_bits(bgoppcolor, bitscolor_bg_to_fg(inplvl->bgcolor));
   clear_map_area(NULL, true);
 
@@ -1150,24 +1123,26 @@ int print_level_info(level *inplvl, int yoffset) {
 /// @param degrees Degress to use to compute
 /// @return Error code
 int render_bird_floating(level *inplvl, int degrees) {
-  if (!inplvl) return -1;
+  if (!inplvl)
+    return -1;
   bird tmpb = get_bird(inplvl);
   double rad = ((2 * M_PI) / 360) * degrees;
 
   double beforerad = ((2 * M_PI) / 360) * (degrees - 2);
   int beforeposy = ((MAPSIZEY / 2) + (6 * sin(beforerad)));
   int beforeposx = (3 * (MAPSIZEX / 5)) - 2;
-  if (beforeposy > 0) beforeposy--;
+  if (beforeposy > 0)
+    beforeposy--;
 
   setcolor_bits(inplvl->bgcolor, bitscolor_bg_to_fg(inplvl->bgcolor));
   for (int x = 0; x < 6; x++)
-    for (int y = 0; y < 3; y++)
-      mvaddch(mapoffsy + beforeposy + y, mapoffsx + beforeposx + x, ' ');
+    for (int y = 0; y < 3; y++) mvaddch(mapoffsy + beforeposy + y, mapoffsx + beforeposx + x, ' ');
   unsetcolor_bits(inplvl->bgcolor, bitscolor_bg_to_fg(inplvl->bgcolor));
 
   tmpb.act_position = (MAPSIZEY / 2) + (6 * sin(rad));
   render_bird(&tmpb, 3 * (MAPSIZEX / 5), false);
-  if (degrees + 2 >= 360) degrees = -2;
+  if (degrees + 2 >= 360)
+    degrees = -2;
 
   refresh();
   msleep(1000 / act_rndsett.fps);
@@ -1181,16 +1156,13 @@ int render_bird_floating(level *inplvl, int degrees) {
 /// @param dofree If do free on data unit
 /// @param actnickname Nickname to highlight
 /// @return If there is any scroll left
-bool render_hof(config_option_t hoff, int yoff, bool dofree,
-                char actnickname[64]) {
+bool render_hof(config_option_t hoff, int yoff, bool dofree, const char actnickname[64]) {
   config_option_t prev = NULL;
   int actoff = 0;
   bool skipalr = false;
 
   int bgoppcolor = native_to_bitscolor(
-      opposit_col(
-          bits_to_native_color(bitscolor_bg_to_fg(act_screen.header_color))),
-      true);
+      opposit_col(bits_to_native_color(bitscolor_bg_to_fg(act_screen.header_color))), true);
   setcolor_bits(bgoppcolor, bitscolor_bg_to_fg(act_screen.header_color));
   clear_map_area(NULL, true);
 
@@ -1206,7 +1178,8 @@ bool render_hof(config_option_t hoff, int yoff, bool dofree,
 
   while (hoff) {
     if (hoff->key[0] != '\0') {
-      if (actoff >= MAPSIZEY - 1) skipalr = true;
+      if (actoff >= MAPSIZEY - 1)
+        skipalr = true;
 
       if (actoff >= yoff && !skipalr) {
         char outtext[255] = {0};
@@ -1221,16 +1194,13 @@ bool render_hof(config_option_t hoff, int yoff, bool dofree,
           lvlout = atoi(havelvl + 5);
         }
 
-        sprintf(outtext, "%s - level: %d, max-score: %s", nickname, lvlout,
-                hoff->value);
+        sprintf(outtext, "%s - level: %d, max-score: %s", nickname, lvlout, hoff->value);
 
         if (strcmp(nickname, actnickname) == 0)
-          setcolor_bits(bitscolor_bg_to_fg(act_screen.header_color),
-                        bgoppcolor);
+          setcolor_bits(bitscolor_bg_to_fg(act_screen.header_color), bgoppcolor);
         mvprintw(mapoffsy + actoff, mapoffsx, "%s", outtext);
         if (strcmp(nickname, actnickname) == 0)
-          setcolor_bits(bgoppcolor,
-                        bitscolor_bg_to_fg(act_screen.header_color));
+          setcolor_bits(bgoppcolor, bitscolor_bg_to_fg(act_screen.header_color));
 
         actoff++;
       }
@@ -1245,8 +1215,7 @@ bool render_hof(config_option_t hoff, int yoff, bool dofree,
   }
 
   if (actoff >= MAPSIZEY - 1 && skipalr)
-    mvprintw(mapoffsy + actoff, mapoffsx,
-             "There is more! (use up and down arrows)");
+    mvprintw(mapoffsy + actoff, mapoffsx, "There is more! (use up and down arrows)");
 
   unsetcolor_bits(bgoppcolor, bitscolor_bg_to_fg(act_screen.header_color));
 
@@ -1258,7 +1227,8 @@ bool render_hof(config_option_t hoff, int yoff, bool dofree,
 /// @return Generated bird structure
 bird get_bird(level *inplvl) {
   bird tmpbird = {0};
-  if (!inplvl) return tmpbird;
+  if (!inplvl)
+    return tmpbird;
 
   tmpbird.act_speed = 0;
   tmpbird.act_position = (int)(MAPSIZEY / 2);
@@ -1266,8 +1236,7 @@ bird get_bird(level *inplvl) {
   // seen
 
   tmpbird.colorbits =
-      native_to_bitscolor(opposit_col(bits_to_native_color(
-                              bitscolor_bg_to_fg(inplvl->bgcolor))),
+      native_to_bitscolor(opposit_col(bits_to_native_color(bitscolor_bg_to_fg(inplvl->bgcolor))),
                           true) |
       (inplvl->bgcolor & (7 << 4));
   tmpbird.gravity = gravity_constant * inplvl->gravity_multiply;
@@ -1283,36 +1252,44 @@ bird get_bird(level *inplvl) {
 /// @param xpos x map offset for bird
 /// @return true if there is collision
 bool bird_collision(bird *inpb, int xpos) {
-  if (!inpb) return false;
+  if (!inpb)
+    return false;
   int xcenter = mapoffsx + xpos;
   int ycenter = mapoffsy + inpb->act_position;
 
   if (ycenter - 1 >= mapoffsy && ycenter - 1 < (mapoffsy + MAPSIZEY))
-    if ((mvinch(ycenter - 1, xcenter) & 255) != ' ') return true;
+    if ((mvinch(ycenter - 1, xcenter) & 255) != ' ')
+      return true;
 
   if (ycenter >= mapoffsy && ycenter < (mapoffsy + MAPSIZEY)) {
-    if ((mvinch(ycenter, xcenter - 2) & 255) != ' ') return true;
-    if ((mvinch(ycenter, xcenter + 3) & 255) != ' ') return true;
-    if ((mvinch(ycenter, xcenter + 2) & 255) != ' ') return true;
+    if ((mvinch(ycenter, xcenter - 2) & 255) != ' ')
+      return true;
+    if ((mvinch(ycenter, xcenter + 3) & 255) != ' ')
+      return true;
+    if ((mvinch(ycenter, xcenter + 2) & 255) != ' ')
+      return true;
 
     for (int i = 0; i < 3; i++)
-      if ((mvinch(ycenter, xcenter - 1 + i) & 255) != ' ') return true;
+      if ((mvinch(ycenter, xcenter - 1 + i) & 255) != ' ')
+        return true;
   }
 
   if (ycenter + 1 >= mapoffsy && ycenter + 1 < (mapoffsy + MAPSIZEY))
-    if ((mvinch(ycenter + 1, xcenter) & 255) != ' ') return true;
+    if ((mvinch(ycenter + 1, xcenter) & 255) != ' ')
+      return true;
 
   return false;
 }
 
 /// @brief Will get most away pipe (with biggest x coordinate)
 /// @return Pointer to pipe
-fbpipe *get_most_away_pipe() {
+fbpipe *get_most_away_pipe(void) {
   int xpos = -1;
   fbpipe *retpipe = NULL;
   bool first = true;
   for (int i = 0; i < MAX_PIPES; i++) {
-    if (!pipe_array[i].enabled) continue;
+    if (!pipe_array[i].enabled)
+      continue;
 
     if (first) {
       xpos = pipe_array[i].position;
@@ -1328,12 +1305,13 @@ fbpipe *get_most_away_pipe() {
 
 /// @brief Will get least away pipe (with lowest x coordinate)
 /// @return Pointer to pipe
-fbpipe *get_least_away_pipe() {
+fbpipe *get_least_away_pipe(void) {
   int xpos = -1;
   fbpipe *retpipe = NULL;
   bool first = true;
   for (int i = 0; i < MAX_PIPES; i++) {
-    if (!pipe_array[i].enabled) continue;
+    if (!pipe_array[i].enabled)
+      continue;
 
     if (first) {
       xpos = pipe_array[i].position;
@@ -1352,7 +1330,8 @@ fbpipe *get_least_away_pipe() {
 /// @param inplvl level struct pointer to use
 /// @return Error code
 int init_speed(level *inplvl) {
-  if (!inplvl) return -1;
+  if (!inplvl)
+    return -1;
   act_speed_chars = METERTOCHARS * inplvl->start_speed;
   return 0;
 }
@@ -1361,7 +1340,8 @@ int init_speed(level *inplvl) {
 /// @param inplvl level struct pointer to use
 /// @return Error code
 int increase_speed(level *inplvl) {
-  if (!inplvl) return -1;
+  if (!inplvl)
+    return -1;
   if (last_time == 0) {
     last_time = timeInMilliseconds();
     return 0;
@@ -1370,17 +1350,17 @@ int increase_speed(level *inplvl) {
   long long act_time = timeInMilliseconds();
   long long timediff = act_time - last_time;
   act_speed_chars +=
-      (float)(METERTOCHARS * (inplvl->speed_increase / (float)60)) *
-      ((float)timediff / 1000);
+      (float)(METERTOCHARS * (inplvl->speed_increase / (float)60)) * ((float)timediff / 1000);
   last_time = timeInMilliseconds();
   return 0;
 }
 
 /// @brief Get any free pipe slot
 /// @return Pointer to free pipe slot
-fbpipe *get_free_pipe_slot() {
+fbpipe *get_free_pipe_slot(void) {
   for (int i = 0; i < MAX_PIPES; i++)
-    if (!pipe_array[i].enabled) return &pipe_array[i];
+    if (!pipe_array[i].enabled)
+      return &pipe_array[i];
 
   return NULL;
 }
@@ -1389,7 +1369,8 @@ fbpipe *get_free_pipe_slot() {
 /// @param inplvl
 /// @return How many pipes has bird came accross
 int move_pipes(const level *inplvl) {
-  if (!inplvl) return -1;
+  if (!inplvl)
+    return -1;
 
   long long act_time = timeInMilliseconds();
   int counter = 0;
@@ -1401,20 +1382,19 @@ int move_pipes(const level *inplvl) {
     }
 
     long long timediff = (act_time - pipe_array[i].last_time_moved);
-    if (!pipe_array[i].enabled) continue;
+    if (!pipe_array[i].enabled)
+      continue;
 
-    int posbef = pipe_array[i].position + 1 + pipe_array[i].pipewidth +
-                 PIPEHOLE_END_WIDTH;
+    int posbef = pipe_array[i].position + 1 + pipe_array[i].pipewidth + PIPEHOLE_END_WIDTH;
 
     if ((act_speed_chars * ((float)timediff / (float)1000)) >= 1) {
-      pipe_array[i].position -=
-          (int)(act_speed_chars * ((float)timediff / (float)1000));
+      pipe_array[i].position -= (int)(act_speed_chars * ((float)timediff / (float)1000));
       pipe_array[i].last_time_moved = act_time;
     }
 
-    int posaf = pipe_array[i].position + 1 + pipe_array[i].pipewidth +
-                PIPEHOLE_END_WIDTH;
-    if (posbef > BIRDOFFX && (posaf < BIRDOFFX || posaf == BIRDOFFX)) counter++;
+    int posaf = pipe_array[i].position + 1 + pipe_array[i].pipewidth + PIPEHOLE_END_WIDTH;
+    if (posbef > BIRDOFFX && (posaf < BIRDOFFX || posaf == BIRDOFFX))
+      counter++;
   }
 
   return counter;
@@ -1424,13 +1404,13 @@ int move_pipes(const level *inplvl) {
 /// @param inplvl level struct pointer to use
 /// @return Error code
 int process_pipes(level *inplvl) {
-  if (!inplvl) return -1;
+  if (!inplvl)
+    return -1;
 
   fbpipe *mostaway = get_most_away_pipe();
   fbpipe *leastaway = get_least_away_pipe();
 
-  if (leastaway &&
-      leastaway->position + 1 + leastaway->pipewidth + PIPEHOLE_END_WIDTH < 0)
+  if (leastaway && leastaway->position + 1 + leastaway->pipewidth + PIPEHOLE_END_WIDTH < 0)
     leastaway->enabled = false;
 
   fbpipe *freepipe = get_free_pipe_slot();
@@ -1438,10 +1418,9 @@ int process_pipes(level *inplvl) {
     if (!mostaway)
       *freepipe = get_pipe(MAPSIZEX - 1 + PIPEHOLE_END_WIDTH, inplvl, true, -1);
     else if (mostaway->position + PIPEHOLE_END_WIDTH < MAPSIZEX)
-      *freepipe = get_pipe(
-          mostaway->position + mostaway->pipewidth + 1 + PIPEHOLE_END_WIDTH +
-              rand_gen(inplvl->minimum_distance, inplvl->maximum_distance),
-          inplvl, true, mostaway->upheight);
+      *freepipe = get_pipe(mostaway->position + mostaway->pipewidth + 1 + PIPEHOLE_END_WIDTH +
+                               rand_gen(inplvl->minimum_distance, inplvl->maximum_distance),
+                           inplvl, true, mostaway->upheight);
   }
   return 0;
 }
@@ -1456,34 +1435,31 @@ level load_level_file(int levelnum) {
   level tmplevel = {0};
   tmplevel.levelnumber = levelnum;
 
-  if (!options) return tmplevel;
+  if (!options)
+    return tmplevel;
 
-  if (options->key[0] == '\0') return tmplevel;
+  if (options->key[0] == '\0')
+    return tmplevel;
 
   tmplevel.loaded = true;
 
   while (options != NULL) {
     if (strcmp(options->key, "bgcolor") == 0)
-      tmplevel.bgcolor =
-          native_to_bitscolor_bg(string_to_color(options->value));
+      tmplevel.bgcolor = native_to_bitscolor_bg(string_to_color(options->value));
     else if (strcmp(options->key, "pipecolor_border_fgcol") == 0)
       tmplevel.pipe_color_brd =
           tmplevel.pipe_color_brd |
-          native_to_bitscolor(string_to_color(options->value),
-                              is_bold(options->value));
+          native_to_bitscolor(string_to_color(options->value), is_bold(options->value));
     else if (strcmp(options->key, "pipecolor_border_bgcol") == 0)
       tmplevel.pipe_color_brd =
-          tmplevel.pipe_color_brd |
-          native_to_bitscolor_bg(string_to_color(options->value));
+          tmplevel.pipe_color_brd | native_to_bitscolor_bg(string_to_color(options->value));
     else if (strcmp(options->key, "pipecolor_body_fgcol") == 0)
       tmplevel.pipe_color_body =
           tmplevel.pipe_color_body |
-          native_to_bitscolor(string_to_color(options->value),
-                              is_bold(options->value));
+          native_to_bitscolor(string_to_color(options->value), is_bold(options->value));
     else if (strcmp(options->key, "pipecolor_body_bgcol") == 0)
       tmplevel.pipe_color_body =
-          tmplevel.pipe_color_body |
-          native_to_bitscolor_bg(string_to_color(options->value));
+          tmplevel.pipe_color_body | native_to_bitscolor_bg(string_to_color(options->value));
     else if (strcmp(options->key, "start_speed") == 0)
       tmplevel.start_speed = atof(options->value);
     else if (strcmp(options->key, "speed_increase") == 0)
@@ -1530,27 +1506,23 @@ level load_level_file(int levelnum) {
 
 /// @brief Load settings from file
 /// @return Error code
-int load_settings() {
+int load_settings(void) {
   config_option_t options = read_config_file(SETTINGS_FILE);
   while (options != NULL) {
     if (strcmp(options->key, "bordercolor_fg") == 0)
       act_screen.border_color =
           act_screen.border_color |
-          native_to_bitscolor(string_to_color(options->value),
-                              is_bold(options->value));
+          native_to_bitscolor(string_to_color(options->value), is_bold(options->value));
     else if (strcmp(options->key, "bordercolor_bg") == 0)
       act_screen.border_color =
-          act_screen.border_color |
-          native_to_bitscolor_bg(string_to_color(options->value));
+          act_screen.border_color | native_to_bitscolor_bg(string_to_color(options->value));
     else if (strcmp(options->key, "header_fg") == 0)
       act_screen.header_color =
           act_screen.header_color |
-          native_to_bitscolor(string_to_color(options->value),
-                              is_bold(options->value));
+          native_to_bitscolor(string_to_color(options->value), is_bold(options->value));
     else if (strcmp(options->key, "header_bg") == 0)
       act_screen.header_color =
-          act_screen.header_color |
-          native_to_bitscolor_bg(string_to_color(options->value));
+          act_screen.header_color | native_to_bitscolor_bg(string_to_color(options->value));
     else if (strcmp(options->key, "header_height") == 0)
       act_screen.header_height = atoi(options->value);
     else if (strcmp(options->key, "header_padding") == 0)

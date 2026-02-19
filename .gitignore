@@ -9,8 +9,13 @@
 !.prettierignore
 !.prettierrc.yaml
 !.yamllint.config.yaml
+!.clang-format
 !Taskfile.yaml
 
+!src
+!src/**
+!include
+!include/**
 !**/.gitignore
 !**/*.c
 !**/*.h
