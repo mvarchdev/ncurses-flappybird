@@ -147,7 +147,7 @@ int print_header_options(int option_items_n, int maxstrlen,
 int print_level_options(int option_selected);
 int move_pipes(const level *inplvl);
 int process_pipes(level *inplvl);
-int render_pipes();
+int render_pipes(level *inplvl);
 int increase_speed(level *inplvl);
 bool bird_collision(bird *inpb, int xpos);
 int move_bird(bird *bird);
