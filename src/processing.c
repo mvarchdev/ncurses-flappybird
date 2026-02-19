@@ -9,13 +9,16 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "flappybird/audio.h"
 #include "flappybird/common_tools.h"
+#include "flappybird/game_stats.h"
 #include "flappybird/rendering.h"
 
 #define SAVES_FILE "./assets/saves.conf"
 #define HALLOFFAME_FILE "./assets/hall_of_fame.conf"
 
 static char active_nickname[64] = {0};
+static game_stats persistent_stats = {0};
 
 static int safe_tolower(int ch) {
   if (ch < 0 || ch > UCHAR_MAX) {
@@ -62,21 +65,25 @@ static int process_run_level(level *input_level) {
   set_last_level(active_nickname, input_level->levelnumber);
   int score = run_level(input_level, &status);
 
+  run_metrics metrics = get_last_run_metrics();
+  game_stats_record_run(&persistent_stats, score, &metrics);
+  game_stats_save(&persistent_stats);
+
   int high_score = get_hall_of_fame(active_nickname, input_level->levelnumber);
   char message[255] = {0};
   if (score > high_score && score > 0) {
-    snprintf(message, sizeof(message),
-             "GAME OVER! NEW HIGH SCORE FOR THIS LEVEL! %s - YOUR SCORE: %d "
-             "[SAVING IT TO HALL OF FAME]",
-             active_nickname, score);
+    snprintf(message, sizeof(message), "GAME OVER! NEW HIGH SCORE! %s scored %d (level %d).",
+             active_nickname, score, input_level->levelnumber);
     set_hall_of_fame(active_nickname, score, input_level->levelnumber);
+    audio_play(AUDIO_EVENT_HIGH_SCORE);
   } else {
-    snprintf(message, sizeof(message), "GAME OVER! %s - YOUR SCORE: %d", active_nickname, score);
+    snprintf(message, sizeof(message), "GAME OVER! %s score: %d (pipes: %d, jumps: %d)",
+             active_nickname, score, metrics.pipes_passed, metrics.jumps);
   }
 
   render_header_string(message, -1, true, true);
   refresh();
-  msleep(1500);
+  msleep(1700);
   flushinp();
 
   return score;
@@ -106,17 +113,20 @@ static int select_level_dialog(void) {
         case KEY_RIGHT:
           if (selected_option < 5) {
             selected_option++;
+            audio_play(AUDIO_EVENT_MENU_MOVE);
           }
           redraw = true;
           break;
         case KEY_LEFT:
           if (selected_option > 0) {
             selected_option--;
+            audio_play(AUDIO_EVENT_MENU_MOVE);
           }
           redraw = true;
           break;
         case '\n':
           redraw = true;
+          audio_play(AUDIO_EVENT_MENU_MOVE);
           switch (selected_option) {
             case 0:
               return selected_level;
@@ -162,7 +172,7 @@ static int show_about_page(void) {
   int scroll = 0;
   timeout(-1);
   keypad(stdscr, true);
-  render_header_string("This is \"about this game\" page, to exit, press 'b'", 1, true, true);
+  render_header_string("About page: arrows to scroll, B to go back", 1, true, true);
 
   while (true) {
     int max_scroll = render_about_page(scroll);
@@ -194,7 +204,7 @@ static int show_hof(void) {
   int scroll = 0;
   timeout(-1);
   keypad(stdscr, true);
-  render_header_string("This is \"HALL OF FAME\" page, to exit, press 'b'", 1, true, true);
+  render_header_string("Hall of fame: arrows to scroll, B to go back", 1, true, true);
 
   config_option_t hof = read_config_file(HALLOFFAME_FILE);
   while (true) {
@@ -224,9 +234,42 @@ static int show_hof(void) {
   }
 }
 
+static int show_statistics_page(void) {
+  int scroll = 0;
+  timeout(-1);
+  keypad(stdscr, true);
+  render_header_string("Statistics: arrows to scroll, B to go back", 1, true, true);
+
+  while (true) {
+    run_metrics last_run = get_last_run_metrics();
+    int max_scroll = render_stats_page(&persistent_stats, &last_run, active_nickname, scroll);
+    refresh();
+    flushinp();
+
+    int ch = getch();
+    if (ch == KEY_UP) {
+      if (scroll > 0) {
+        scroll--;
+      }
+      continue;
+    }
+    if (ch == KEY_DOWN) {
+      if (scroll < max_scroll) {
+        scroll++;
+      }
+      continue;
+    }
+    if (safe_tolower(ch) == 'b') {
+      timeout(0);
+      keypad(stdscr, false);
+      return 0;
+    }
+  }
+}
+
 static void request_nickname(void) {
   while (true) {
-    render_header_string("Please write here your nickname (max 63 chars): ", 1, true, true);
+    render_header_string("Please write your nickname (max 63 chars): ", 1, true, true);
     refresh();
     echo();
     curs_set(1);
@@ -242,14 +285,14 @@ static void request_nickname(void) {
     }
     render_header_string("Your nick cannot be empty!", 1, true, true);
     refresh();
-    msleep(1500);
+    msleep(1200);
   }
 
   char message[120] = {0};
   snprintf(message, sizeof(message), "Your nickname is now: %s", active_nickname);
   render_header_string(message, 1, true, true);
   refresh();
-  msleep(1500);
+  msleep(1200);
 }
 
 static int process_option(int option) {
@@ -259,20 +302,18 @@ static int process_option(int option) {
       if (last_level > 0) {
         level loaded_level = load_level_file(last_level);
         if (!loaded_level.loaded) {
-          render_header_string("The level that is saved, does not exist! Setting to level 1.", 0,
-                               true, true);
+          render_header_string("Saved level does not exist. Resetting to level 1.", 0, true, true);
           refresh();
-          msleep(1500);
+          msleep(1300);
           flushinp();
           set_last_level(active_nickname, 1);
         } else {
           process_run_level(&loaded_level);
         }
       } else {
-        render_header_string("You are playing this game for the first time, running level 1", 0,
-                             true, true);
+        render_header_string("First run detected. Starting level 1.", 0, true, true);
         refresh();
-        msleep(1500);
+        msleep(1300);
         flushinp();
         level loaded_level = load_level_file(1);
         process_run_level(&loaded_level);
@@ -294,6 +335,9 @@ static int process_option(int option) {
       show_hof();
       break;
     case 4:
+      show_statistics_page();
+      break;
+    case 5:
       show_about_page();
       break;
     default:
@@ -317,15 +361,18 @@ static int run_menu(void) {
       case KEY_RIGHT:
         if (selected_option < menu_inem_n - 1) {
           selected_option++;
+          audio_play(AUDIO_EVENT_MENU_MOVE);
         }
         break;
       case KEY_LEFT:
         if (selected_option > 0) {
           selected_option--;
+          audio_play(AUDIO_EVENT_MENU_MOVE);
         }
         break;
       case '\n':
-        if (selected_option == 5) {
+        audio_play(AUDIO_EVENT_MENU_MOVE);
+        if (selected_option == menu_inem_n - 1) {
           keypad(stdscr, false);
           return 1;
         }
@@ -338,7 +385,9 @@ static int run_menu(void) {
 }
 
 int run_game(void) {
+  persistent_stats = game_stats_load();
   request_nickname();
   run_menu();
+  game_stats_save(&persistent_stats);
   return 0;
 }

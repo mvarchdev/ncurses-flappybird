@@ -5,11 +5,13 @@
 #include <ctype.h>
 #include <math.h>
 #include <ncurses.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
 
+#include "flappybird/audio.h"
 #include "flappybird/common_tools.h"
 
 /// @brief Up left border character
@@ -47,6 +49,13 @@
 
 /// @brief Maximal header string for game details
 #define MAXHEADERSTRING 40
+/// @brief Maximum lines shown in stats/about pages.
+#define MAX_PAGE_LINES 40
+/// @brief Maximum line length for generic render pages.
+#define MAX_PAGE_LINE_LEN 120
+/// @brief Banner files used in the menu page.
+#define MENU_TITLE_BANNER ASSETS_FOLDER "/name_banner.txt"
+#define MENU_WELCOME_BANNER ASSETS_FOLDER "/welcome_banner.txt"
 
 /// @brief Maximum of piped that can be rendered at once
 #define MAX_PIPES 30
@@ -91,9 +100,117 @@ int headersizex = 0;
 
 /// @brief Total vertical offset of map render area
 char menu_items[menu_inem_n + 1][menu_item_maxstrlen] = {
-    "Start (where you ended)", "Select level", "Change nickname",
-    "Show hall of fame",       "About",        "Exit",
+    "Start (where you ended)",
+    "Select level",
+    "Change nickname",
+    "Show hall of fame",
+    "Show statistics",
+    "About",
+    "Exit",
 };
+
+/// @brief Metrics captured for currently running session.
+run_metrics active_run_metrics = {0};
+/// @brief Metrics from last completed run.
+run_metrics last_run_metrics = {0};
+/// @brief Dynamic scoring streak for multiplier progression.
+int score_streak = 0;
+/// @brief Dynamic scoring multiplier.
+int score_multiplier = 1;
+
+// Internal forward declarations used by helper routines.
+void setcolor_bits(int fg, int bg);
+void unsetcolor_bits(int fg, int bg);
+int bitscolor_bg_to_fg(int bg);
+short bits_to_native_color(int color);
+short opposit_col(short col);
+int native_to_bitscolor(short color, bool bold);
+
+static int safe_tolower(int ch) {
+  if (ch == EOF) {
+    return ch;
+  }
+  if (ch < 0 || ch > 255) {
+    return ch;
+  }
+  return tolower((unsigned char)ch);
+}
+
+static void reset_active_run_metrics(void) {
+  memset(&active_run_metrics, 0, sizeof(active_run_metrics));
+  score_streak = 0;
+  score_multiplier = 1;
+  active_run_metrics.highest_multiplier = 1;
+}
+
+static void finalize_run_metrics(void) { last_run_metrics = active_run_metrics; }
+
+static int calc_multiplier_from_streak(int streak) {
+  int multiplier = 1 + (streak / 5);
+  if (multiplier > 4) {
+    multiplier = 4;
+  }
+  return multiplier;
+}
+
+static void play_countdown(level *inplvl) {
+  const char *steps[] = {"Get Ready", "3", "2", "1", "GO!"};
+  for (size_t i = 0; i < sizeof(steps) / sizeof(steps[0]); i++) {
+    render_header_string(steps[i], -1, true, true);
+    clear_map_area(inplvl, true);
+    refresh();
+    audio_play(AUDIO_EVENT_COUNTDOWN);
+    msleep(i == 0 ? 450 : 300);
+  }
+}
+
+static int render_file_to_map(const char *filepath, int yoff, int xoff, int max_lines) {
+  FILE *fp = fopen(filepath, "r");
+  if (fp == NULL) {
+    return 0;
+  }
+
+  int rendered_lines = 0;
+  char line[256] = {0};
+  while (rendered_lines < max_lines && fgets(line, sizeof(line), fp) != NULL) {
+    size_t len = strlen(line);
+    while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r')) {
+      line[--len] = '\0';
+    }
+    mvprintw(mapoffsy + yoff + rendered_lines, mapoffsx + xoff, "%s", line);
+    rendered_lines++;
+  }
+
+  fclose(fp);
+  return rendered_lines;
+}
+
+static int render_text_page(char lines[MAX_PAGE_LINES][MAX_PAGE_LINE_LEN], int line_count,
+                            int yoffset, const char *bg_help_message) {
+  int bgoppcolor = native_to_bitscolor(
+      opposit_col(bits_to_native_color(bitscolor_bg_to_fg(act_screen.header_color))), true);
+  setcolor_bits(bgoppcolor, bitscolor_bg_to_fg(act_screen.header_color));
+  clear_map_area(NULL, true);
+
+  int src_line = yoffset;
+  int dst_line = 0;
+  while (src_line < line_count && dst_line < MAPSIZEY - 1) {
+    mvprintw(mapoffsy + dst_line, mapoffsx, "%s", lines[src_line]);
+    src_line++;
+    dst_line++;
+  }
+
+  if (src_line < line_count && bg_help_message != NULL) {
+    mvprintw(mapoffsy + MAPSIZEY - 1, mapoffsx, "%s", bg_help_message);
+  }
+
+  unsetcolor_bits(bgoppcolor, bitscolor_bg_to_fg(act_screen.header_color));
+
+  if (line_count <= MAPSIZEY - 1) {
+    return 0;
+  }
+  return line_count - (MAPSIZEY - 1);
+}
 
 /// @brief Function checks if intensity bit is set
 /// @param fg Colorbits input
@@ -358,15 +475,16 @@ int print_game_details(int actlives, int score, level *inplvl, bird *inpb) {
     return -1;
 
   int i = 0;
-  char headerinp[7][MAXHEADERSTRING] = {0};
+  char headerinp[8][MAXHEADERSTRING] = {0};
   sprintf(headerinp[i++], "Level name: %s", inplvl->levelname);
   sprintf(headerinp[i++], "Score: %d", score);
   sprintf(headerinp[i++], "Lives [Actual / Max]: %d / %d", actlives, inplvl->max_lives);
   sprintf(headerinp[i++], "Speed: %.3f [char/s]", act_speed_chars);
   sprintf(headerinp[i++], "Bird speed: %.3f [char/s]", inpb->act_speed);
-  i++;
-  sprintf(headerinp[i++], "Pause: p | End game: e");
-  return render_header_text(7, MAXHEADERSTRING, headerinp);
+  sprintf(headerinp[i++], "Streak: %d | Multiplier: x%d", score_streak, score_multiplier);
+  sprintf(headerinp[i++], "Jump: space | Pause: p | End game: e");
+  sprintf(headerinp[i++], "Hint: keep a streak to raise score multiplier");
+  return render_header_text(8, MAXHEADERSTRING, headerinp);
 }
 
 /// @brief Game paused dialog
@@ -380,9 +498,9 @@ int game_paused_dialog(void) {
     int ch = getch();
     if (ch == EOF)
       continue;
-    else if (tolower(ch) == 'p')
+    else if (safe_tolower(ch) == 'p')
       return 0;
-    else if (tolower(ch) == 'e')
+    else if (safe_tolower(ch) == 'e')
       return 1;
   }
 }
@@ -416,9 +534,9 @@ int colision_dialog(int actlives, int score) {
     int ch = getch();
     if (ch == EOF)
       continue;
-    else if (tolower(ch) == 't')
+    else if (safe_tolower(ch) == 't')
       return 0;
-    else if (tolower(ch) == 'e')
+    else if (safe_tolower(ch) == 'e')
       return 1;
   }
 }
@@ -444,22 +562,27 @@ int run_level(level *inplvl, int *status) {
   bird usebird;
   if (!status)
     status = &statustmp;
+  reset_active_run_metrics();
 
   while (actlives != 0) {
     clear_all_pipes();
     usebird = get_bird(inplvl);
     last_time = 0;
+    play_countdown(inplvl);
 
     timeout(0);
     while (true) {
       int ch = getch();
       if (ch != EOF) {
-        if (ch == ' ')
+        if (ch == ' ') {
           jump_bird(&usebird);
-        else if (tolower(ch) == 'e') {
+          active_run_metrics.jumps++;
+          audio_play(AUDIO_EVENT_JUMP);
+        } else if (safe_tolower(ch) == 'e') {
           *status = 1;
           break;
-        } else if (tolower(ch) == 'p') {
+        } else if (safe_tolower(ch) == 'p') {
+          active_run_metrics.pauses++;
           if (game_paused_dialog() == 1) {
             *status = 1;
             break;
@@ -468,6 +591,11 @@ int run_level(level *inplvl, int *status) {
           usebird.last_time_ms = timeInMilliseconds();
           update_last_ms_pipes(usebird.last_time_ms);
           last_time = 0;
+        } else if (safe_tolower(ch) == 'h') {
+          render_header_string("Tip: maintain streaks to increase score multiplier.", 0, true,
+                               true);
+          refresh();
+          msleep(650);
         }
         flushinp();
       }
@@ -475,19 +603,34 @@ int run_level(level *inplvl, int *status) {
       move_bird(&usebird);
       clear_map_area(inplvl, true);
       render_pipes(inplvl);
-      if (bird_collision(&usebird, BIRDOFFX) || usebird.act_position >= MAPSIZEY - 1)
+      if (bird_collision(&usebird, BIRDOFFX) || usebird.act_position >= MAPSIZEY - 1) {
+        active_run_metrics.collisions++;
+        score_streak = 0;
+        score_multiplier = 1;
+        audio_play(AUDIO_EVENT_COLLISION);
         break;
+      }
 
       render_bird(&usebird, BIRDOFFX, false);
-      score += move_pipes(inplvl);
+      int passed_pipes = move_pipes(inplvl);
+      if (passed_pipes > 0) {
+        active_run_metrics.pipes_passed += passed_pipes;
+        score_streak += passed_pipes;
+        score_multiplier = calc_multiplier_from_streak(score_streak);
+        if (score_multiplier > active_run_metrics.highest_multiplier) {
+          active_run_metrics.highest_multiplier = score_multiplier;
+        }
+        if (score_streak > active_run_metrics.highest_streak) {
+          active_run_metrics.highest_streak = score_streak;
+        }
+        score += passed_pipes * score_multiplier;
+        audio_play(AUDIO_EVENT_PIPE_PASSED);
+      }
       process_pipes(inplvl);
-      // last_time = timeInMilliseconds();
       increase_speed(inplvl);
       refresh();
 
       msleep(1000 / act_rndsett.fps);
-
-      // usleep(1000);
     }
     if (*status == 1)
       break;
@@ -502,6 +645,7 @@ int run_level(level *inplvl, int *status) {
 
   flushinp();
   timeout(-1);
+  finalize_run_metrics();
   return score;
 }
 
@@ -648,55 +792,100 @@ int render_menu(int option_selected, const char nickname[]) {
     return err;
   char namestr[120] = {0};
   sprintf(namestr, "Welcome, %s!", nickname);
-  return render_header_string(namestr, 0, true, false);
-}
-
-/// @brief Will render 'About this game' page
-/// @param yoffset Scroll offset
-/// @return Maximal allowed scroll
-int render_about_page(int yoffset) {
-  char aboutinfo[10][100] = {0};
-
-  int lineidx = 0;
-  sprintf(aboutinfo[lineidx++],
-          "Welcome to this game named Flappy Bird - created in ncurses framework!");
-  sprintf(aboutinfo[lineidx++],
-          "This game was created by Maros Varchola as school project, but now, "
-          "as you can see.");
-  sprintf(aboutinfo[lineidx++], "It is used as part of my portfolio.");
-
-  sprintf(aboutinfo[lineidx++],
-          "If you have any ideas on how to improve this game, do not be shy "
-          "and try a PR.");
-  sprintf(aboutinfo[lineidx++], "I believe it will be very interesting change/feature!");
-
-  sprintf(aboutinfo[lineidx++],
-          "In this game, the real physics calculations are used, so even "
-          "gravity constant is set here!");
-
-  sprintf(aboutinfo[lineidx++], "If you have any questions, write me on marosvarchola@sunray.sk !");
-  lineidx++;
-  sprintf(aboutinfo[lineidx++], "ENJOY THE GAME!");
+  render_header_string(namestr, 0, true, false);
 
   int bgoppcolor = native_to_bitscolor(
       opposit_col(bits_to_native_color(bitscolor_bg_to_fg(act_screen.header_color))), true);
   setcolor_bits(bgoppcolor, bitscolor_bg_to_fg(act_screen.header_color));
   clear_map_area(NULL, true);
 
-  int lineidxcounter = yoffset, i = 0;
-  for (; lineidxcounter < lineidx && i < MAPSIZEY - 1; i++) {
-    mvprintw(mapoffsy + i, mapoffsx, aboutinfo[lineidxcounter]);
-    lineidxcounter++;
+  int used_lines = render_file_to_map(MENU_TITLE_BANNER, 1, 2, MAPSIZEY / 2);
+  int extra_lines =
+      render_file_to_map(MENU_WELCOME_BANNER, used_lines + 2, 2, (MAPSIZEY / 2) - used_lines);
+
+  int tip_start = used_lines + extra_lines + 4;
+  if (tip_start > MAPSIZEY - 4) {
+    tip_start = MAPSIZEY - 4;
   }
-  if (i >= MAPSIZEY - 1 && lineidxcounter < lineidx)
-    mvprintw(mapoffsy + i - 1, mapoffsx, "There is more! Scroll down! (arrows up/down)");
+  mvprintw(mapoffsy + tip_start, mapoffsx + 2, "Controls:");
+  mvprintw(mapoffsy + tip_start + 1, mapoffsx + 2, "Space jump, P pause, E end run, H quick hint");
+  mvprintw(mapoffsy + tip_start + 2, mapoffsx + 2,
+           "New: score multiplier based on streak + persistent statistics page");
 
   unsetcolor_bits(bgoppcolor, bitscolor_bg_to_fg(act_screen.header_color));
-
-  if (i >= MAPSIZEY - 1 && lineidxcounter < lineidx)
-    return i - MAPSIZEY;
-
   return 0;
+}
+
+/// @brief Will render 'About this game' page
+/// @param yoffset Scroll offset
+/// @return Maximal allowed scroll
+int render_about_page(int yoffset) {
+  char aboutinfo[MAX_PAGE_LINES][MAX_PAGE_LINE_LEN] = {0};
+  int lineidx = 0;
+
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN,
+           "Ncurses Flappy Bird is a terminal-first remake focused on gameplay and tinkering.");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN,
+           "Original project by Maros Varchola, now expanded with modernized code structure.");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN, "");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN, "Highlights in this version:");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN,
+           "- Configurable levels with physics + color themes");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN, "- Dynamic streak multiplier scoring system");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN,
+           "- Persistent global stats tracking across runs");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN, "- Optional terminal sound cues");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN, "");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN, "Controls:");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN, "- Space: jump");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN, "- P: pause/resume");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN, "- E: end current run");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN, "- H: quick gameplay hint");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN, "");
+  snprintf(aboutinfo[lineidx++], MAX_PAGE_LINE_LEN,
+           "Contributions and ideas are welcome. Enjoy the game.");
+
+  return render_text_page(aboutinfo, lineidx, yoffset,
+                          "There is more! Scroll down! (arrows up/down)");
+}
+
+int render_stats_page(const game_stats *stats, const run_metrics *last_run, const char *nickname,
+                      int yoffset) {
+  if (stats == NULL || last_run == NULL || nickname == NULL) {
+    return 0;
+  }
+
+  char lines[MAX_PAGE_LINES][MAX_PAGE_LINE_LEN] = {0};
+  int lineidx = 0;
+
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Player: %s", nickname);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "=== Global statistics ===");
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Total runs: %d", stats->total_runs);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Total score: %d", stats->total_score);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Total jumps: %d", stats->total_jumps);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Total collisions: %d", stats->total_collisions);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Total pipes passed: %d",
+           stats->total_pipes_passed);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Best score: %d", stats->best_score);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Best streak: %d", stats->best_streak);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "");
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "=== Last run summary ===");
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Pipes passed: %d", last_run->pipes_passed);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Jumps: %d", last_run->jumps);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Collisions: %d", last_run->collisions);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Pauses: %d", last_run->pauses);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Highest streak: %d", last_run->highest_streak);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Highest multiplier: x%d",
+           last_run->highest_multiplier);
+  snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "");
+  if (stats->total_runs > 0) {
+    double avg_score = (double)stats->total_score / (double)stats->total_runs;
+    snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Average score per run: %.2f", avg_score);
+  } else {
+    snprintf(lines[lineidx++], MAX_PAGE_LINE_LEN, "Average score per run: 0.00");
+  }
+
+  return render_text_page(lines, lineidx, yoffset, "There is more! Scroll down! (arrows up/down)");
 }
 
 /// @brief Get random pipe based on level
@@ -1061,7 +1250,7 @@ int print_level_info(level *inplvl, int yoffset) {
   sprintf(lvlinfo[lineidx++], "Start speed: %.3f [m/s]", inplvl->start_speed);
 
   if (inplvl->speed_increase > 0)
-    sprintf(lvlinfo[lineidx++], "Speed increase: %.3f [m/s per minute]", inplvl->start_speed);
+    sprintf(lvlinfo[lineidx++], "Speed increase: %.3f [m/s per minute]", inplvl->speed_increase);
   else
     sprintf(lvlinfo[lineidx++], "Speed increase: %.3f [m/s per minute] (DEFAULT)", def_speed_incr);
 
@@ -1150,6 +1339,8 @@ int render_bird_floating(level *inplvl, int degrees) {
   return degrees + 2;
 }
 
+run_metrics get_last_run_metrics(void) { return last_run_metrics; }
+
 /// @brief Will render hall of fame
 /// @param hoff Data pointer to use
 /// @param yoff Scroll
@@ -1185,10 +1376,16 @@ bool render_hof(config_option_t hoff, int yoff, bool dofree, const char actnickn
         char outtext[255] = {0};
         char *havelvl = strstr(hoff->key, "#lvl_");
         char nickname[64] = {0};
-        memcpy(nickname, hoff->key,
-               (size_t)(strstr(hoff->key, "#lvl_") - hoff->key) >= 64
-                   ? 63
-                   : (size_t)(strstr(hoff->key, "#lvl_") - hoff->key));
+        if (havelvl != NULL) {
+          size_t nick_len = (size_t)(havelvl - hoff->key);
+          if (nick_len > sizeof(nickname) - 1) {
+            nick_len = sizeof(nickname) - 1;
+          }
+          memcpy(nickname, hoff->key, nick_len);
+          nickname[nick_len] = '\0';
+        } else {
+          snprintf(nickname, sizeof(nickname), "%s", hoff->key);
+        }
         int lvlout = -1;
         if (havelvl) {
           lvlout = atoi(havelvl + 5);
@@ -1507,6 +1704,9 @@ level load_level_file(int levelnum) {
 /// @brief Load settings from file
 /// @return Error code
 int load_settings(void) {
+  audio_set_enabled(true);
+  audio_set_mode("beep");
+
   config_option_t options = read_config_file(SETTINGS_FILE);
   while (options != NULL) {
     if (strcmp(options->key, "bordercolor_fg") == 0)
@@ -1535,6 +1735,10 @@ int load_settings(void) {
       def_grav_multiply = atof(options->value);
     else if (strcmp(options->key, "default_speed_increase_per_minute") == 0)
       def_speed_incr = atof(options->value);
+    else if (strcmp(options->key, "sound_enabled") == 0)
+      audio_set_enabled(atoi(options->value) != 0);
+    else if (strcmp(options->key, "sound_mode") == 0)
+      audio_set_mode(options->value);
 
     config_option_t prev = options->prev;
     free(options);

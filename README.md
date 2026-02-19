@@ -7,6 +7,9 @@ Terminal Flappy Bird clone written in C with `ncurses`.
 - Real-time gameplay loop with gravity/jump physics.
 - Config-driven rendering and level tuning.
 - Persistent save state and hall-of-fame scores by nickname.
+- Persistent global gameplay statistics across runs.
+- Dynamic streak-based score multiplier system.
+- Configurable terminal sound cues (beep or bell).
 - Portable build with dependency tracking (`Makefile`).
 
 ## Repository layout
@@ -52,7 +55,18 @@ Edit `/assets/settings/settings.conf`:
 - header and border colors
 - header dimensions
 - FPS
+- sound settings (`sound_enabled`, `sound_mode`)
 - optional gravity defaults
+
+### Gameplay controls
+
+- `Space`: jump
+- `P`: pause/resume
+- `E`: end run
+- `H`: in-game quick hint
+- `Left/Right`: menu navigation
+- `Enter`: select
+- `B`: exit information pages
 
 ### Map size
 
@@ -104,4 +118,5 @@ Configured in `/.pre-commit-config.yaml`:
 - Runtime save files are:
   - `/assets/saves.conf`
   - `/assets/hall_of_fame.conf`
-- Both are git-ignored through `/assets/.gitignore`.
+  - `/assets/game_stats.conf`
+- All are git-ignored through `/assets/.gitignore`.
